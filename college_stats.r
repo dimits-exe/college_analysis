@@ -1,12 +1,7 @@
 library(haven)
 path = file.path("data", "05_colleges.sav")
-df = read_sav(path)
-df
-
-library(psych)
-describe(df$write)
-describe(df$math)
-describe(df$socst)
+input = read_sav(path)
+df = data.frame(input)
 
 class(df$genre)
 df$genre <- as.factor(df$genre)
@@ -28,9 +23,17 @@ class(df$math)
 class(df$write)
 class(df$socst)
 
-qqnorm(df$write)
-qqline(df$write)
+library(psych)
+describe(df$write)
+describe(df$math)
+describe(df$socst)
 
+# check for relationships between numerical variables
+corr.test(df[6:8], adjust="bonferroni", minlength = 3)
+
+boxplot(write ~ race, data=df)
+boxplot(write ~ prog, data=df)
+boxplot(write ~ schtyp, data=df)
 
 # ===== erotima b =====
 men_write = df[df$genre == "male",]
@@ -74,9 +77,4 @@ boxplot(formula, data=df)
 kruskal.test(formula, data=df)
 # significant differences
 # show boxplots
-
-
-# ===== erotima c =====
-
-
 
