@@ -1,7 +1,18 @@
+RESOURCE_PATH = "resources"
+
+save_plot <- function(filename, plot_func, ...) {
+  filepath = file.path(RESOURCE_PATH, paste(filename, ".png"))
+  png(filepath)
+  plot_func(...)
+  dev.off()
+}
+
 library(haven)
 path = file.path("data", "05_colleges.sav")
 input = read_sav(path)
 df = data.frame(input)
+
+# check and refactor dataframe
 
 class(df$genre)
 df$genre <- as.factor(df$genre)
@@ -29,11 +40,14 @@ describe(df$math)
 describe(df$socst)
 
 # check for relationships between numerical variables
-corr.test(df[6:8], adjust="bonferroni", minlength = 3)
+corr.test(df[6:8], adjust="holm", minlength = 3)
+rcorr(cbind(df$write, df$mathm, df$socst), type="spearman")
 
-boxplot(write ~ race, data=df)
-boxplot(write ~ prog, data=df)
-boxplot(write ~ schtyp, data=df)
+save_plot("write_race_boxplot", boxplot, formula=write ~ race, data=df)
+save_plot("write_genre_boxplot", boxplot, formula=write ~ genre, data=df)
+save_plot("write_prog_boxplot", boxplot, formula=write ~ prog, data=df)
+save_plot("write_schtyp_boxplot", boxplot, formula=write ~ schtyp, data=df)
+
 
 # ===== erotima b =====
 men_write = df[df$genre == "male",]
@@ -70,7 +84,7 @@ shapiro.test(anova$res)
 # not normal
 
 # check mean
-boxplot(formula, data=df)
+save_plot("write_prog_boxplot", boxplot, formula=formula, data=df)
 # not good mean
 
 # non-parametric means test

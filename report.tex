@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[10pt]{article}
 
 \usepackage{enumerate}
 \usepackage[utf8]{inputenc}
@@ -10,6 +10,9 @@
 \usepackage{wrapfig}
 \usepackage{hyperref}
 \usepackage[table]{xcolor}
+\usepackage{mathptmx} % Times New Roman
+\usepackage{lipsum}  
+\usepackage{makecell}
 
 \pagenumbering{arabic}
 
@@ -55,13 +58,13 @@
 	
 	We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students.
 	
-	The study is structured as follows. In Section we make general observations about our data and we form our first hypotheses. In Section \ref{sec::results} we follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
+	The study is structured as follows. In this Section we make general observations about our data and we form our first hypotheses. In Section \ref{sec::results} we follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
 	
 	\begin{table}[h]
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
-			{ |p{2cm} p{2cm} p{4.5cm} p{4.5cm}| }
+			{ |p{1cm} p{1cm} p{5cm} p{3cm}| }
 			\hline
 			\textbf{Name} & \textbf{Type} & \textbf{Description} & \textbf{Range}\\
 			\hline
@@ -79,14 +82,57 @@
 		\label{tab::dataset}
 	\end{table}
 
+	
+
+	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
+
+	\begin{table}[h]
+		\centering
+		\rowcolors{2}{gray!25}{white}
+		\begin{tabular}
+			{ |p{1cm} p{0.5cm} p{0.7cm} p{0.5cm} p{1cm} p{0.7cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm} p{0.5cm}| }
+			\hline
+			\textbf{Var.} & \textbf{Obs.} & \textbf{Mean} & \textbf{Std} & \textbf{Median} & \textbf{Trim} & \textbf{Min} & \textbf{Max} & \textbf{Skew} & \textbf{Kurt} & \textbf{SE}\\
+			\hline
+			Write & $200$ & $52.77$ & $9.48$ & $54$ & $53.36$ & $31$ & $67$ & $-0.47$ & $-0.78$ & $0.67$ \\
+			Math & $200$ & $52.65$ & $9.37$ & $52$ & $52.33$ & $33$ & $75$ & $0.28$ & $-0.69$ & $0.66$ \\
+			Socst & $200$ & $52.41$ & $10.74$ & $52$ &$ 52.99$ & $26$ & $71$ & $-0.38$ & $-0.57$ & $0.76$ \\
+			\hline
+		\end{tabular}
+		\caption{Summary statistics on the numerical data used in the study.}
+		\label{tab::summary_stats}
+	\end{table}
+
+	We next study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant (p\_value = $0.0000$), positive ($r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as "Competence" in this report.
+	
+	\begin{table}[h]
+		\scriptsize
+		\centering
+		\rowcolors{2}{gray!25}{white}
+		\begin{tabular}
+			{ |p{1.2cm} p{1.2cm} p{1.2cm} p{1.2cm} | }
+			\hline
+			 & \textbf{write} & \textbf{math} & \textbf{socst} \\
+			 \hline
+			\textbf{write} & \makecell{$1$\\ $0.000$ ****} & - & - \\
+			\textbf{math} & \makecell{$0.62$\\ $0.000$ ****} & \makecell{$1$\\ $0.00$ ****} & - \\
+			\textbf{socst} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\makecell{$1$\\ $0.000$****}\\
+			\hline
+		\end{tabular}
+		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Starts indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
+		\label{tab::corr}
+	\end{table}
+	
 	\section{Results}
 	\label{sec::results}
+	\lipsum[1-4]
 	
 	\section{Conclusions \& Discussion}
 	\label{sec::conclusions}
+	\lipsum[23-28]
 	
 	\section{Addendum}
 	\label{sec::addendum}
-	
+	\lipsum[31-35]
 	
 \end{document}
