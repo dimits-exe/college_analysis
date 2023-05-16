@@ -1,7 +1,7 @@
 RESOURCE_PATH = "resources"
 
 save_plot <- function(filename, plot_func, ...) {
-  filepath = file.path(RESOURCE_PATH, paste(filename, ".png"))
+  filepath = file.path(RESOURCE_PATH, paste(filename, ".png", sep = ""))
   png(filepath)
   plot_func(...)
   dev.off()
@@ -40,7 +40,7 @@ describe(df$math)
 describe(df$socst)
 
 # check for relationships between numerical variables
-corr.test(df[6:8], adjust="holm", minlength = 3)
+corr.test(df[6:8], adjust="holm")
 rcorr(cbind(df$write, df$mathm, df$socst), type="spearman")
 
 save_plot("write_race_boxplot", boxplot, formula=write ~ race, data=df)

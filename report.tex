@@ -21,7 +21,7 @@
 
 \graphicspath{ {./resources/} }
 
-%\addbibresource{refs.bib}
+\addbibresource{refs.bib}
 
 
 \title{\Huge A Comprehensive Study on US College Admissions  }
@@ -82,7 +82,6 @@
 		\label{tab::dataset}
 	\end{table}
 
-	
 
 	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
 
@@ -105,6 +104,8 @@
 
 	We next study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant (p\_value = $0.0000$), positive ($r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as "Competence" in this report.
 	
+	Since the three subjects are strongly correlated we can explore correlations between the rest of the factors and any of the tests, assuming that a correlation with one strongly indicates with the other two as well. We notice a probable correlation between Gender and Writing scores, as shown in Figure \ref{fig::write_gender}.
+	
 	\begin{table}[h]
 		\scriptsize
 		\centering
@@ -119,17 +120,43 @@
 			\textbf{socst} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\makecell{$1$\\ $0.000$****}\\
 			\hline
 		\end{tabular}
-		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Starts indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
+		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
 		\label{tab::corr}
 	\end{table}
+
+	\begin{figure}
+		\includegraphics[width=6cm]{write_genre_boxplot.png}
+		\centering
+		\caption{Boxplot displaying the writing score by gender.}
+		\label{fig::write_gender}
+	\end{figure}
 	
 	\section{Results}
 	\label{sec::results}
-	\lipsum[1-4]
+	
+	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test score.
+	
+	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores \parencite{means}, and conclude they are not normal (Shapiro-Wilk normality test, $p\_value = 0.0024$). The variances are not homogeneous (Levene's test $p\_value = 0.0022$), although this should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the precondition's violation is not significant \parencite{variances}. We will use a parametric test since the distribution of the differences has a normal kurtosis (Jarque-Bera Normality Test, $p\_value=0.026$).
+	
+	We conclude there is a statistically significant difference between the writing scores of men and women (Two-sided Welch Two Sample t-test, $p\_value = 0.0003$) with women having on average 5 more score than men (Welch Two Sample t-test with $H_a = less$, $p\_value = 0.00017$).
+	
+	We will now verify the preconditions for the parametric ANOVA test in order to test which programs are correlated with the writing tests' scores. The variances of the residuals are homogeneous (Levene's test $p\_value = 0.0022$), but not normal (Shapiro-Wilk normality test, $p\_value = 0.002$). We will thus use a non-parametric test.
+	
+	We discover there is a statistically significant difference between the groups (Kruskall-Wallis rank sum test, $p\_value=4e-08$). We can consult the boxplots in Figure \ref{fig::write_prog}, where we observe significant differences between all three groups.
+	
+	\begin{figure}
+		\includegraphics[width=6cm]{write_prog_boxplot.png}
+		\centering
+		\caption{Boxplot displaying the writing score by gender.}
+		\label{fig::write_prog}
+	\end{figure}
 	
 	\section{Conclusions \& Discussion}
 	\label{sec::conclusions}
 	\lipsum[23-28]
+	
+	\section{Bibliography}
+	\printbibliography
 	
 	\section{Addendum}
 	\label{sec::addendum}
