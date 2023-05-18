@@ -183,6 +183,57 @@
 	
 	\section{Addendum}
 	\label{sec::addendum}
-	\lipsum[31-35]
+	
+	\subsection{Exploratory Analysis}
+	In this section we include tables and figures which were used in the exploratory analysis of the data in the Introduction. 
+	
+	\begin{figure}
+		\includegraphics[width=4cm]{write_schtyp_boxplot.png}
+		\centering
+		\caption{Boxplot displaying the writing score by school type.}
+		\label{fig::write_schtyp_boxplot}
+	\end{figure}
+	
+	\begin{figure}
+		\includegraphics[width=4cm]{write_race_boxplot.png}
+		\centering
+		\caption{Boxplot displaying the writing score by candidate race.}
+		\label{fig::write_race_boxplot}
+	\end{figure}
+	
+	
+	\subsection{OLS model preconditions}
+	
+	In order to visually confirm the normal distribution of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot} and \ref{fig::lm_socst_boxplot} show models including other test scores.
+	
+	\begin{figure}
+		\includegraphics[width=4cm]{lm_math_residual_boxplot.png}
+		\centering
+		\caption{The normalized residuals of the math model plotted for each of the 4 quantiles.}
+		\label{fig::lm_math_boxplot}
+	\end{figure}
+
+	\begin{figure}
+		\includegraphics[width=4cm]{lm_socst_residual_boxplot.png}
+		\centering
+		\caption{The normalized residuals of the social studies model plotted for each of the 4 quantiles. }
+		\label{fig::lm_socst_boxplot}
+	\end{figure}
+
+	We also check for outliers by plotting the normalized residuals against the model's predictions. The red lines denote the $y=1.95$ and $y=-1.95$ values respectively and we expect 95\% of the points to be within them. Any value outside of $[-3,3]$ indicates a strong outlier which must be investigated. Figures \ref{fig::lm_math_plot} and \ref{fig::lm_socst_plot} show models including other test scores.
+	
+	 \begin{figure}
+	 	\includegraphics[width=4cm]{lm_math_residual_plot.png}
+	 	\centering
+	 	\caption{The normalized residuals of the math model plotted against the model's predictions.}
+	 	\label{fig::lm_math_plot}
+	 \end{figure}
+ 
+	 \begin{figure}
+	 	\includegraphics[width=4cm]{lm_socst_residual_plot.png}
+	 	\centering
+	 	\caption{The normalized residuals of the socst model plotted against the model's predictions. Notice the one outlier above the $y=3$ line, which represents the data point that was investigated and removed.}
+	 	\label{fig::lm_socst_plot}
+	 \end{figure}
 	
 \end{document}
