@@ -4,7 +4,7 @@ filepath_png <- function(name) {
   return(file.path(RESOURCE_PATH, paste(name, ".png", sep = "")))
 }
 
-save_plot <- function(name, plot_func, ...) {
+my_save_plot <- function(name, plot_func, ...) {
   filepath = filepath_png(name)
   png(filepath)
   plot_func(...)
@@ -47,10 +47,26 @@ describe(df$socst)
 corr.test(df[6:8], adjust="holm")
 rcorr(cbind(df$write, df$mathm, df$socst), type="spearman")
 
-save_plot("write_race_boxplot", boxplot, formula=write ~ race, data=df)
-save_plot("write_genre_boxplot", boxplot, formula=write ~ genre, data=df)
-save_plot("write_prog_boxplot", boxplot, formula=write ~ prog, data=df)
-save_plot("write_schtyp_boxplot", boxplot, formula=write ~ schtyp, data=df)
+# test all combinations
+chisq.test(df$genre, df$race)
+chisq.test(df$genre, df$schtyp)
+chisq.test(df$genre, df$prog)
+chisq.test(df$race, df$schtyp, simulate.p.value = T)
+chisq.test(df$race, df$prog, simulate.p.value = T)
+chisq.test(df$schtyp, df$prog, simulate.p.value = T)
+
+#schtyp-prog only statistically significant
+library(sjPlot)
+sjt.xtab(var.row=df$schtyp, var.col=df$prog, show.row.prc = T)
+
+my_save_plot("write_race_boxplot", boxplot, formula=write ~ race, data=df, 
+             xlab="Race", ylab="Writing Test Score")
+my_save_plot("write_genre_boxplot", boxplot, formula=write ~ genre, data=df,
+             xlab="Gender", ylab="Writing Test Score")
+my_save_plot("write_prog_boxplot", boxplot, formula=write ~ prog, data=df,
+             xlab="Previous Program", ylab="Writing Test Score")
+my_save_plot("write_schtyp_boxplot", boxplot, formula=write ~ schtyp, data=df,
+             xlab="School Type", ylab="Writing Test Score")
 
 
 # ===== erotima b =====
@@ -73,7 +89,6 @@ library(car)
 leveneTest(write ~ genre, data=df)
 bartlett.test(formula, df)
 
-# use Welch test regardless of variance analysis
 wilcox.test(men_write$write, women_write$write)
 wilcox.test(men_write$write, women_write$write, alternative = "less")
 
@@ -92,7 +107,7 @@ shapiro.test(anova$res)
 # not normal
 
 # check mean
-save_plot("write_prog_boxplot", boxplot, formula=formula, data=df)
+my_save_plot("write_prog_boxplot", boxplot, formula=formula, data=df)
 # not good mean
 
 # non-parametric means test
@@ -126,7 +141,7 @@ quantcut <- function(x, digits=6) {
 
 qfits <- quantcut(math_model$fit)
 leveneTest(rstandard(math_model), qfits)
-save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, boxcol=0,boxfill=3, medlwd=2, 
+my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, boxcol=0,boxfill=3, medlwd=2, 
         medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
         ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
 
@@ -171,7 +186,7 @@ shapiro.test(rstandard(socst_model))
 
 qfits <- quantcut(socst_model$fit)
 leveneTest(rstandard(socst_model), qfits)
-save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits, 
+my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"))
@@ -219,7 +234,7 @@ shapiro.test(rstandard(no_peek_mmodel))
 
 qfits <- quantcut(no_peek_mmodel$fit)
 leveneTest(rstandard(no_peek_mmodel), qfits)
-save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
+my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
@@ -261,7 +276,7 @@ shapiro.test(rstandard(socst_nopeek_model))
 
 qfits <- quantcut(socst_nopeek_model$fit)
 leveneTest(rstandard(socst_nopeek_model), qfits)
-save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
+my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
