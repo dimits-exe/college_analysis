@@ -59,8 +59,13 @@
 	We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students.
 	
 	The study is structured as follows. In this Section we make general observations about our data and we form our first hypotheses. In Section \ref{sec::results} we follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
+
 	
-	\begin{table}
+	\section{Results}
+	\label{sec::results}
+	
+	\subsection{Exploratory Analysis}
+		\begin{table}
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
@@ -81,10 +86,10 @@
 		\caption{An overview of the data used in this study.}
 		\label{tab::dataset}
 	\end{table}
-
-
+	
+	
 	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
-
+	
 	\begin{table}
 		\centering
 		\rowcolors{2}{gray!25}{white}
@@ -101,7 +106,7 @@
 		\caption{Summary statistics on the numerical data used in the study.}
 		\label{tab::summary_stats}
 	\end{table}
-
+	
 	We next study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant (p\_value = $0.0000$), positive ($r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as "Competence" in this report.
 	
 	Since the three subjects are strongly correlated we can explore correlations between the rest of the factors and any of the tests, assuming that a correlation with one strongly indicates with the other two as well. 
@@ -115,8 +120,8 @@
 		\begin{tabular}
 			{ |p{1.2cm} | p{1.2cm} p{1.2cm} p{1.2cm} | }
 			\hline
-			 & \textbf{write} & \textbf{math} & \textbf{socst} \\
-			 \hline
+			& \textbf{write} & \textbf{math} & \textbf{socst} \\
+			\hline
 			\textbf{write} & \makecell{$1$\\ $0.000$ ****} & - & - \\
 			\textbf{math} & \makecell{$0.62$\\ $0.000$ ****} & \makecell{$1$\\ $0.00$ ****} & - \\
 			\textbf{socst} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\makecell{$1$\\ $0.000$****}\\
@@ -125,23 +130,20 @@
 		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
 		\label{tab::corr}
 	\end{table}
-
+	
 	\begin{figure}
 		\includegraphics[width=4cm]{write_genre_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by gender.}
 		\label{fig::write_gender}
 	\end{figure}
-
+	
 	\begin{figure}
 		\includegraphics[width=4cm]{write_prog_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by current program. Notice the significant differences in means.}
 		\label{fig::write_prog}
 	\end{figure}
-	
-	\section{Results}
-	\label{sec::results}
 	
 	\subsection{Writing scores influenced by gender}
 	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test score.
