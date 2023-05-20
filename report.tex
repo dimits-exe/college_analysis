@@ -56,9 +56,9 @@
 	\section{Introduction}
 	The study uses a random sample of 200 students who applied to continue their studies in their respective universities. Their application consisted of three standardized tests testing their skills and knowledge in mathematics, social studies and creative writing. The dataset we used is available at LINK.  An overview of the data contained can be found in Table \ref{tab::dataset}.
 	
-	We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students.
+	We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students (and as such are considered independent samples).
 	
-	The study is structured as follows. In this Section we make general observations about our data and we form our first hypotheses. In Section \ref{sec::results} we follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
+	The study is structured as follows. In this Section . In Section \ref{sec::results} we make general observations about our data, form our first hypotheses and follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
 
 	
 	\section{Results}
@@ -107,24 +107,48 @@
 		\label{tab::summary_stats}
 	\end{table}
 	
-	We next study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant (p\_value = $0.0000$), positive ($r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as "Competence" in this report.
+	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p\_value = 0.015$), which can be seen in Table \ref{tab::chisq}.
+	
+	\begin{table}
+		\centering
+		\rowcolors{2}{gray!25}{white}
+		\begin{tabular}
+			{ |p{2cm} | p{1.2cm} p{1.2cm} p{1.2cm} | p{1.2cm} | }
+			\hline
+			\multicolumn{5}{|c|}{\textbf{Previous Program}}\\
+			\hline
+			\textbf{School Type} & \textbf{general} & \textbf{academic} & \textbf{vocation} & \textbf{Total}\\
+			\hline
+			\textbf{public} & \makecell{39 \\ $23.2\%$} & \makecell{81 \\ $48.2\%$} & \makecell{48 \\ $28.6\%$} & \makecell{168 \\ $100\%$} \\
+			\textbf{private} & \makecell{6 \\ $18.8\%$} & \makecell{24 \\ $75\%$} & \makecell{2 \\ $6.2\%$} & \makecell{32 \\ $100\%$}\\
+			\hline
+			\textbf{Total} & \makecell{45 \\ $22.5\%$} & \makecell{105 \\ $52.5\%$} & \makecell{50 \\ $25\%$} & \makecell{200 \\ $100\%$}\\
+			\hline
+		\end{tabular}
+		\caption{$\chi^2$ test between \textit{School Type} and \textit{Program}. Notice the overwhelming majority of candidates who attended private schools having an academic background prior to applying.}
+		\label{tab::chisq}
+	\end{table}
+	
+	
+	Finally, we study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant ($p\_value = 0.0000$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as \textit{"Competence"} in this report.
 	
 	Since the three subjects are strongly correlated we can explore correlations between the rest of the factors and any of the tests, assuming that a correlation with one strongly indicates with the other two as well. 
 	
 	We notice a probable correlation between gender and writing scores, as shown in Figure \ref{fig::write_gender}, as well as between the student's program and writing scores, as shown in Figure \ref{fig::write_prog}.
 	
 	\begin{table}
-		\scriptsize
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
-			{ |p{1.2cm} | p{1.2cm} p{1.2cm} p{1.2cm} | }
+			{ |p{2.5cm} | p{2.5cm} | p{2.5cm}  | p{2.5cm} | }
 			\hline
-			& \textbf{write} & \textbf{math} & \textbf{socst} \\
+			& \textbf{Writing} & \textbf{Math} & \textbf{Social Studies} \\
 			\hline
-			\textbf{write} & \makecell{$1$\\ $0.000$ ****} & - & - \\
-			\textbf{math} & \makecell{$0.62$\\ $0.000$ ****} & \makecell{$1$\\ $0.00$ ****} & - \\
-			\textbf{socst} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\makecell{$1$\\ $0.000$****}\\
+			\textbf{Writing} & \cellcolor{darkgray} & \cellcolor{darkgray} & \cellcolor{darkgray} \\
+			\hline
+			\textbf{Math} & \makecell{$0.62$\\ $0.000$ ****} & \cellcolor{darkgray} & \cellcolor{darkgray}\\
+			\hline
+			\textbf{Social Studies} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\cellcolor{darkgray}\\
 			\hline
 		\end{tabular}
 		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
@@ -132,14 +156,14 @@
 	\end{table}
 	
 	\begin{figure}
-		\includegraphics[width=4cm]{write_genre_boxplot.png}
+		\includegraphics[width=8cm]{write_genre_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by gender.}
 		\label{fig::write_gender}
 	\end{figure}
 	
 	\begin{figure}
-		\includegraphics[width=4cm]{write_prog_boxplot.png}
+		\includegraphics[width=8cm]{write_prog_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by current program. Notice the significant differences in means.}
 		\label{fig::write_prog}
@@ -148,9 +172,9 @@
 	\subsection{Writing scores influenced by gender}
 	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test score.
 	
-	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores \parencite{means}, and conclude they are not normal (Shapiro-Wilk normality test, $p\_value = 0.0024$). The variances are not homogeneous (Levene's test $p\_value = 0.0022$), although this should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the precondition's violation is not significant \parencite{variances}. We will use a parametric test since the distribution of the differences has a normal kurtosis (Jarque-Bera Normality Test \cite{jarque}, $p\_value=0.026$).
+	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores \parencite{means}, and conclude they are not normal (Shapiro-Wilk normality test, $p\_value = 0.0024$). The variances are not homogeneous (Levene's test $p\_value = 0.0022$), although this should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the precondition's violation is not significant \parencite{variances}. We will use a non-parametric test since the distribution of the differences do not have a normal kurtosis (Jarque-Bera Normality Test \cite{jarque}, $p\_value=0.026$), and thus their mean is not suitable.
 	
-	We conclude there is a statistically significant difference between the writing scores of men and women (Two-sided Welch Two Sample t-test, $p\_value = 0.0003$) with women having on average 5 more score than men (Welch Two Sample t-test with $H_a = less$, $p\_value = 0.00017$).
+	We conclude there is a statistically significant difference between the writing scores of men and women (Wilcoxon Rank Sum Test, $p\_value = 0.0009$) with women having on average 5 more score than men (Wilcoxon Rank Sum Test with $H_a = less$, $p\_value = 0.0004$).
 	
 	
 	\subsection{Writing scores influenced by previous program}

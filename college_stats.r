@@ -74,8 +74,8 @@ leveneTest(write ~ genre, data=df)
 bartlett.test(formula, df)
 
 # use Welch test regardless of variance analysis
-t.test(men_write$write, women_write$write)
-t.test(men_write$write, women_write$write, alternative = "less")
+wilcox.test(men_write$write, women_write$write)
+wilcox.test(men_write$write, women_write$write, alternative = "less")
 
 
 formula = write ~ prog
