@@ -158,33 +158,42 @@
 	
 	
 	\subsection{Building a predictive model}
-	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will predict a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
+	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will estimate a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
 	
 	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
 	
-	We initially build an OLS model predicting the writing scores which involves all the available variables. This model exhibits a good fit ($R^2_{adj} = 0.4753, F= 37.06 p\_value=2.2e-16, df=194$). We also verify all the preconditions for the regression model; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.2099$), homogeneous (Levene's Test, $p\_value = 0.1057$) and non-correlated (Durbin-Watson test, $p\_value=0.236$) and there are no significant outliers (see Addendum).
+	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit ($R^2_{adj} = 0.4753, F= 37.06 p\_value=2.2e-16, df=194$). We also verify all the preconditions for the regression model; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.2099$), homogeneous (Levene's Test, $p\_value = 0.1057$) and non-correlated (Durbin-Watson test, $p\_value=0.236$) and there are no significant outliers (see Addendum).
 	
 	Our current model exhibits high confidence about the gender ($p\_value_{female} = 0.0056$), previous program  ($p\_value_{progacademic} = 0.0025$), writing scores ($p\_value_{write} = 3.57e-08$), social study scores ($p\_value_{socst} = 0.0053$) and the constant ($p\_value_{intercept} = 8.29e-09$). However, it exhibits low confidence about the candidate's race ($p\_value_{raceasian} = 0.05$) and no confidence about his school type ($p\_value=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.4882$. Since the model maintains its confidence about the other variables, we keep this model as the optimal one. A summary of the optimal model can be found in Table \ref{tab::lm_math_peeking}.
 	
-	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4535, F= 17.7 p\_value=2.2e-16, df=188$). We detect an outlier in our precondition verification, a student with an above-average grade in writing but an abysmal one in social studies. Since this individual exerts a significant influence in our model (as it is largely dependent on the writing scores for its predictions) we remove them from the sample. The other preconditions are met, the residuals are sufficiently normal (Shapiro-Wilk normality test $p\_value = 0.0125$), homogeneous (Levene's Test, $p\_value = 0.3394$) and non-correlated (Durbin-Watson test, $p\_value=0.678$).
+	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4535, F= 17.7 p\_value=2.2e-16, df=188$). We detect an outlier in our precondition verification, a student with an above-average grade in writing but an abysmal one in social studies. Since this individual exerts a significant influence in our model (as it is largely dependent on the writing scores for its estimations) we remove them from the sample. The other preconditions are met, the residuals are sufficiently normal (Shapiro-Wilk normality test $p\_value = 0.0125$), homogeneous (Levene's Test, $p\_value = 0.3394$) and non-correlated (Durbin-Watson test, $p\_value=0.678$).
 	
 	As mentioned above, this model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly non-statistically significant. We thus employ a stepwise procedure in order to eliminate variables deemed statistically insignificant while retaining, or increasing our models goodness of fit. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking}.
 	
-	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown "Competence" value. While other variables such as the candidate's past program, have a statistically significant influence in our model, we can see that the model's predictions are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of multi-co-linearity between the test variables, as seen in the previous auto-correlations tests.
+	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown "Competence" value. While other variables such as the candidate's past program, have a statistically significant influence in our model, we can see that the model's estimations are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of multi-co-linearity between the test variables, as seen in the previous auto-correlations tests.
 	
 	\include{lm_math_peeking.tex}
 	\include{lm_socst_peeking.tex}
 	
 	
-	\subsection{Verifying test correlations}
+	\subsection{Verifying test score correlations}
 	
-	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. We expect our models to still have a decent (although almost certainly degraded) performance by relying on the other lesson.
+	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. If our alternative hypothesis was correct we would expect our models to no longer have a good performance, while having a much smaller statistical significance on the other lesson's model.
 	
-	We begin by constructing an OLS regression model which tries to predict the math score by considering the candidate's characteristics and his scores in the social studies test. Our initial model including all the variables scores a $R^2_{adj} = 0.3999$ score. We next verify all the necessary preconditions; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.8403$), homogeneous (Levene's Test, $p\_value = 0.1641$) and non-correlated (Durbin-Watson test, $p\_value=0.534$) and there are no significant outliers. 
+	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and his scores in the social studies test. Our initial model including all the variables scores a $R^2_{adj} = 0.3999$ score. We next verify all the necessary preconditions; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.8403$), homogeneous (Levene's Test, $p\_value = 0.1641$) and non-correlated (Durbin-Watson test, $p\_value=0.534$) and there are no significant outliers. 
 	
 	This model again displays high confidence in the following variables: Race ($p\_value_{raceasian} = 0.002$, $p\_value_{racewhite} = 0.012$), Program ($p\_value_{progacademic} = 0.0005$), Social Study Test Scores ($p\_value_{socst} = 4.25e-09$) and the Constant ($p\_value_{socst} = 2e-16$). By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022$, found in Table \ref{tab::lm_math_nopeeking}.
 	
+	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p\_value_{math} = 4.25e-09$) and the Constant ($p\_value_{Intercept} = 5.27e-08$) is the candidate's Program ($p\_value_{progvocation} = 0.0283$).
+	
+	We again verify the preconditions necessary for the linear regression model. The residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.7449$), homogeneous (Levene's Test, $p\_value = 0.2314$) and non-correlated (Durbin-Watson test, $p\_value=0.952$) and there are no significant outliers.
+	
+	Because of the many possible variables that are candidates for removal we can again employ a stepwise model selection algorithm. The best model by AIC keeps only the math and program variables (as expected) but explains less of the data ($R^2_{adj} = 0.3383$). Since the reduction in $R^2_{adj}$ is minimal, and since the new model can reach this score by discarding almost all other variables (which as described above are essentially considered as noise by our model), we will be using this model as optimal (Table \ref{tab::lm_socst_nopeeking}).
+	
+	These findings seem to contradict our alternative hypothesis. While our models' performance certainly degraded, they still achieve comparable results, with their performance loss being explained by the degree to which \textit{"Competence"} can be measured. In other words, this unknown variable can be approximated more accurately by considering both other tests, instead of just one. This is further proof that our initial hypothesis appears to be correct.
+	
 	\include{lm_math_nopeeking.tex}
+	\include{lm_socst_nopeeking.tex}
 
 	
 	\section{Conclusions \& Discussion}
@@ -217,7 +226,7 @@
 	
 	\subsection{OLS model preconditions}
 	
-	In order to visually confirm the normal distribution of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot},  show models including only the other lesson's scores.
+	In order to visually confirm the normal distribution of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot}, \ref{fig::lm_socst_nopeeking_boxplot} show models including only the other lesson's scores.
 	
 	\begin{figure}
 		\includegraphics[width=4cm]{lm_math_residual_boxplot.png}
@@ -239,30 +248,43 @@
 		\caption{The normalized residuals of the math model plotted for each of the 4 quantiles. }
 		\label{fig::lm_math_nopeeking_boxplot}
 	\end{figure}
-	
+
+	\begin{figure}
+		\includegraphics[width=4cm]{lm_socst_nopeeking_residual_boxplot.png}
+		\centering
+		\caption{The normalized residuals of the math model plotted for each of the 4 quantiles. }
+		\label{fig::lm_socst_nopeeking_boxplot}
+	\end{figure}
 
 
-	We also check for outliers by plotting the normalized residuals against the model's predictions. The red lines denote the $y=1.95$ and $y=-1.95$ values respectively and we expect 95\% of the points to be within them. Any value outside of $[-3,3]$ indicates a strong outlier which must be investigated. Figures \ref{fig::lm_math_plot}, \ref{fig::lm_socst_plot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_plot}, show models including only the other lesson's scores.
+	We also check for outliers by plotting the normalized residuals against the model's estimations. The red lines denote the $y=1.95$ and $y=-1.95$ values respectively and we expect 95\% of the points to be within them. Any value outside of $[-3,3]$ indicates a strong outlier which must be investigated. Figures \ref{fig::lm_math_plot}, \ref{fig::lm_socst_plot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_plot}, \ref{fig::lm_sosct_nopeeking_plot} show models including only the other lesson's scores.
 	
 	 \begin{figure}
 	 	\includegraphics[width=4cm]{lm_math_residual_plot.png}
 	 	\centering
-	 	\caption{The normalized residuals of the math model plotted against the model's predictions.}
+	 	\caption{The normalized residuals of the math model plotted against the model's estimations.}
 	 	\label{fig::lm_math_plot}
 	 \end{figure}
  
 	 \begin{figure}
 	 	\includegraphics[width=4cm]{lm_socst_residual_plot.png}
 	 	\centering
-	 	\caption{The normalized residuals of the socst model plotted against the model's predictions. Notice the one outlier above the $y=3$ line, which represents the data point that was investigated and removed.}
+	 	\caption{The normalized residuals of the social studies model plotted against the model's estimations. Notice the one outlier above the $y=3$ line, which represents the data point that was investigated and removed.}
 	 	\label{fig::lm_socst_plot}
 	 \end{figure}
  
 	 \begin{figure}
 	 	\includegraphics[width=4cm]{lm_math_nopeeking_residual_plot.png}
 	 	\centering
-	 	\caption{The normalized residuals of the math model plotted against the model's predictions. We notice three potential outliers. These values are considered non-anomalous, as they stray sufficiently away from the $y=3$ and $y=-3$ brackets, and are to be expected in a sample of 200 values.}
+	 	\caption{The normalized residuals of the math model plotted against the model's estimations. We notice three potential outliers. These values are considered non-anomalous, as they stray sufficiently away from the $y=3$ and $y=-3$ brackets, and are to be expected in a sample of 200 values.}
 	 	\label{fig::lm_math_nopeeking_plot}
+	 \end{figure}
+ 
+	 \begin{figure}
+	 	\includegraphics[width=4cm]{lm_socst_residual_plot.png}
+	 	\centering
+	 	\caption{The normalized residuals of the social studies model (without the writing scores variable) plotted against the model's estimations. We don't consider the values above and below the $y=3$ and $y=-3$ brackets respectively for the same reasons as in Figure \ref{fig::lm_math_nopeeking_plot}.}
+	 	\label{fig::lm_sosct_nopeeking_plot}
 	 \end{figure}
 	
 \end{document}

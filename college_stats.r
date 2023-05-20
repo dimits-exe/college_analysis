@@ -205,7 +205,7 @@ no_peek_mmodel = lm(math ~ genre + race + schtyp + prog + socst, data=df)
 summary(no_peek_mmodel)
 
 # manually saved because of multiple functioned used for one plot
-filepath = filepath_png("lm_math_nopeek_residual_plot")
+filepath = filepath_png("lm_math_nopeeking_residual_plot")
 png(filepath)
 plot(no_peek_mmodel$fit, rstandard(no_peek_mmodel))
 abline(h=-1.96, col='red', lwd=2, lty=2)
@@ -219,7 +219,7 @@ shapiro.test(rstandard(no_peek_mmodel))
 
 qfits <- quantcut(no_peek_mmodel$fit)
 leveneTest(rstandard(no_peek_mmodel), qfits)
-save_plot("lm_mmath_nopeek_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
+save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
@@ -240,7 +240,49 @@ summary(optimal_nopeek_mmodel)
 # Do we need to re-check preconditions here?
 
 stargazer(optimal_nopeek_mmodel, type="latex", 
-          title="Linear regression model predicting social study test scores, 
-          without relying on the writing tests", ci=T, label="tab::lm_math_nopeeking", df=T,
-          out="lm_math_nopeeking.tex", report=('vc*p'))
+          title="Linear regression model predicting math test scores, 
+          without relying on the writing tests.", ci=T, label="tab::lm_math_nopeeking", 
+          df=T, out="lm_math_nopeeking.tex", report=('vc*p'))
 
+socst_nopeek_model = lm(socst ~ genre + race + schtyp + prog + math, data=df)
+summary(socst_nopeek_model)
+
+# manually saved because of multiple functioned used for one plot
+filepath = filepath_png("lm_socst_nopeeking_residual_plot")
+png(filepath)
+plot(socst_nopeek_model$fit, rstandard(socst_nopeek_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+# no outliers
+dev.off()
+
+# check for normality
+shapiro.test(rstandard(socst_nopeek_model))
+
+qfits <- quantcut(socst_nopeek_model$fit)
+leveneTest(rstandard(socst_nopeek_model), qfits)
+save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
+          boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+          col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+          names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
+
+# check for autocorrelation
+durbinWatsonTest(socst_nopeek_model)
+durbinWatsonTest(socst_nopeek_model, method="normal")
+
+fullModel = lm(socst ~ . - id - write, data = df) 
+nullModel = lm(socst ~ 1, data = df) 
+optimal_socst_nopeek_model = stepAIC(socst_nopeek_model,
+                                direction = 'both', 
+                                scope = list(upper = fullModel, 
+                                             lower = nullModel), 
+                                trace = 0)
+summary(optimal_socst_nopeek_model)
+
+AIC(optimal_socst_model)
+AIC(socst_nopeek_model)
+
+stargazer(optimal_socst_nopeek_model, type="latex", 
+          title="Linear regression model predicting social study test scores, 
+          without relying on the writing tests.", ci=T, label="tab::lm_socst_nopeeking",
+          df=T, out="lm_socst_nopeeking.tex", report=('vc*p'))
