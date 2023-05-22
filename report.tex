@@ -57,16 +57,15 @@
 	
 	The aim of this study is to investigate possible links and relationships between a candidate's characteristics and their performance in multiple standardized tests. We employ a random sample of 200 students who applied to continue their studies in their respective universities. Their application consisted of three standardized tests testing their skills and knowledge in mathematics, social studies and creative writing. An overview of the data contained can be found in Table \ref{tab::dataset}. 
 	
-	The data and replication code can be found in our Github repository \footnote{\url{https://github.com/dimits-exe/college_analysis}}. We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students (and as such are considered independent samples).
+	The data and replication code can be found in our GitHub repository \footnote{\url{https://github.com/dimits-exe/college_analysis}}. We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students (and as such are considered independent samples).
 	
-	The study is structured as follows: In Section \ref{sec::results} we make general observations about our data, form our first hypotheses and follow up with robust analyses and regression models to prove/disprove these hypotheses. Section \ref{sec::conclusions} follows with an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
-
+	The study is structured as follows: In Section \ref{sec::exploratory} we make general observations about our data, identify key relationships and form our first hypotheses. We follow up these hypotheses in Section \ref{sec::var_cors} with robust analyses and in Section \ref{sec::models} by employing various regression models. Section \ref{sec::conclusions} features an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
 	
-	\section{Results}
-	\label{sec::results}
 	
-	\subsection{Exploratory Analysis}
-		\begin{table}
+	\section{Exploratory Analysis}
+	\label{sec::exploratory}
+	
+	\begin{table}
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
@@ -170,6 +169,9 @@
 		\label{fig::write_prog}
 	\end{figure}
 	
+	\section{Variable correlations}
+	\label{sec::var_cors}
+	
 	\subsection{Writing scores influenced by gender}
 	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test score.
 	
@@ -184,7 +186,11 @@
 	We discover there is a statistically significant difference between the groups (Kruskall-Wallis rank sum test, $p\_value=4e-08$). We can consult the boxplots in Figure \ref{fig::write_prog}, where we observe significant differences between all three groups.
 	
 	
-	\subsection{Building a predictive model}
+	\section{Predictive / interpretative models}
+	\label{sec::models}
+	
+	
+	\subsection{Building the base model}
 	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will estimate a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
 	
 	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
@@ -203,7 +209,7 @@
 	\include{lm_socst_peeking.tex}
 	
 	
-	\subsection{Verifying test score correlations}
+	\subsection{Identifying test score causation}
 	
 	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. If our alternative hypothesis was correct we would expect our models to no longer have a good performance, while having a much smaller statistical significance on the other lesson's model.
 	
@@ -235,8 +241,8 @@
 	We note that these findings are only representative for our sample. Our statistical models were used exclusively as explanatory models and should not be used for prediction. We also note that the relationships presented in this report are only representative of our sample, and should not be generalized for the general population. Finally, we warn against extrapolating any relationships from our tests, since they only imply a correlation, not necessarily causation.
 	
 	
-	\section{Bibliography}
-	\printbibliography
+	\section{References}
+	\printbibliography[heading=none]
 	
 	\section{Addendum}
 	\label{sec::addendum}
