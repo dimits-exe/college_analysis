@@ -111,8 +111,8 @@ jarque.test(diff)
 
 # Test whether the differences are homogeneous.
 library(car)
-leveneTest(write ~ gender, data=df)
-bartlett.test(formula, df)
+leveneTest(write ~ gender, df)
+bartlett.test(write ~ gender, df)
 
 # Preconditions for parametric t-test failed, thus execute a non-parametric 
 # test for the significance in differences in mean
@@ -176,6 +176,7 @@ quantcut <- function(x, digits=6) {
 qfits <- quantcut(math_model$fit)
 # Homogeneity test.
 leveneTest(rstandard(math_model), qfits)
+bartlett.test(rstandard(math_model), qfits)
 # Plot the residuals against their quantiles and save the boxplot to the disk.
 my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, boxcol=0,boxfill=3, medlwd=2, 
         medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
@@ -202,7 +203,7 @@ library(stargazer)
 stargazer(optimized_math_model, type="latex", 
           title="Linear regression model predicting math test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_math_peeking", df=T,
-          out="lm_math_peeking.tex")
+          out="lm_math_peeking.tex", report=('vc*p'))
 
 
 # Create the base model which attempts to predict the social studies score based on 
@@ -236,6 +237,7 @@ shapiro.test(rstandard(socst_model))
 # for each of the respective fitted values' quantiles
 qfits <- quantcut(socst_model$fit)
 leveneTest(rstandard(socst_model), qfits)
+bartlett.test(rstandard(socst_model), qfits)
 my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
@@ -288,6 +290,7 @@ shapiro.test(rstandard(no_peek_mmodel))
 # Repeat previously established routine to check for homogeneity
 qfits <- quantcut(no_peek_mmodel$fit)
 leveneTest(rstandard(no_peek_mmodel), qfits)
+bartlett.test(rstandard(no_peek_mmodel), qfits)
 my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
@@ -334,6 +337,7 @@ shapiro.test(rstandard(socst_nopeek_model))
 # Repeat previously established routine to check for homogeneity
 qfits <- quantcut(socst_nopeek_model$fit)
 leveneTest(rstandard(socst_nopeek_model), qfits)
+bartlett.test(rstandard(socst_nopeek_model), qfits)
 my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
           boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
