@@ -1,9 +1,14 @@
+# Tsirmpas Dimitris p3190205
+
 RESOURCE_PATH = "resources"
 
+# Utility function to get a relative file path (including file extension)
+# from a file name.
 filepath_png <- function(name) {
   return(file.path(RESOURCE_PATH, paste(name, ".png", sep = "")))
 }
 
+# Utility function to save a plot to the disk.
 my_save_plot <- function(name, plot_func, ...) {
   filepath = filepath_png(name)
   png(filepath)
@@ -11,16 +16,17 @@ my_save_plot <- function(name, plot_func, ...) {
   dev.off()
 }
 
+# Import the data.
 library(haven)
 path = file.path("data", "05_colleges.sav")
 input = read_sav(path)
 df = data.frame(input)
 
-# check and refactor dataframe
+# Check the provided variables' types and refactor them when needed.
 
-class(df$genre)
-df$genre <- as.factor(df$genre)
-levels(df$genre) <- c("male", "female")
+class(df$gender)
+df$gender <- as.factor(df$gender)
+levels(df$gender) <- c("male", "female")
 
 class(df$schtyp)
 df$schtyp <- as.factor(df$schtyp)
@@ -34,34 +40,46 @@ class(df$race)
 df$race <- as.factor(df$race)
 levels(df$race) <- c("hispanic", "asian", "african-amer", "white")
 
+# Fix typo from source dataset.
+names(df)[names(df) == 'genre'] <- 'gender'
+
 class(df$math)
 class(df$write)
 class(df$socst)
+df
 
+# Get summary statistics from each of the quantitative variables.
 library(psych)
 describe(df$write)
 describe(df$math)
 describe(df$socst)
 
-# check for relationships between numerical variables
+# Check for relationships between numerical variables.
 corr.test(df[6:8], adjust="holm")
-rcorr(cbind(df$write, df$mathm, df$socst), type="spearman")
 
-# test all combinations
-chisq.test(df$genre, df$race)
-chisq.test(df$genre, df$schtyp)
-chisq.test(df$genre, df$prog)
+# Perform correlation test on categorical variables.
+# Manually test all combinations between all variables.
+chisq.test(df$gender, df$race)
+chisq.test(df$gender, df$schtyp)
+chisq.test(df$gender, df$prog)
+# The following tests have relative small samples, thus we use a simulated
+# p value test with N=2000 (default) iterations. 
 chisq.test(df$race, df$schtyp, simulate.p.value = T)
 chisq.test(df$race, df$prog, simulate.p.value = T)
 chisq.test(df$schtyp, df$prog, simulate.p.value = T)
 
-#schtyp-prog only statistically significant
+# schtyp-prog is the only statistically significant correlation
+# we thus produce a table using the sjtplot library
 library(sjPlot)
 sjt.xtab(var.row=df$schtyp, var.col=df$prog, show.row.prc = T)
 
+# Test all relationships between the categorical variables and writing scores
+# then save their boxplots to the disk.
+# We explain in the report why we only consider writing scores as the dependent
+# variable.
 my_save_plot("write_race_boxplot", boxplot, formula=write ~ race, data=df, 
              xlab="Race", ylab="Writing Test Score")
-my_save_plot("write_genre_boxplot", boxplot, formula=write ~ genre, data=df,
+my_save_plot("write_gender_boxplot", boxplot, formula=write ~ gender, data=df,
              xlab="Gender", ylab="Writing Test Score")
 my_save_plot("write_prog_boxplot", boxplot, formula=write ~ prog, data=df,
              xlab="Previous Program", ylab="Writing Test Score")
@@ -70,59 +88,72 @@ my_save_plot("write_schtyp_boxplot", boxplot, formula=write ~ schtyp, data=df,
 
 
 # ===== erotima b =====
-men_write = df[df$genre == "male",]
-women_write = df[df$genre == "female",]
 
-# compute diff
+# Split our dataset into female and male slices.
+men_write = df[df$gender == "male",]
+women_write = df[df$gender == "female",]
+
+# Compute differences between the means. Reference for the methodology is 
+# available in the report.
 diff <- mean(df$write) - women_write$write
 diff
 
-# check if differences are normal
+# Check if differences are normal by making a qqplot.
 qqnorm(diff)
 qqline(diff)
+# Plot is inconclusive, thus run a shapiro normality test.
 shapiro.test(diff)
 
+# Test whether the mean is well behaved by examining the normality of the 
+# residuals' kurtosis.
 library(moments)
 jarque.test(diff)
 
+# Test whether the differences are homogeneous.
 library(car)
-leveneTest(write ~ genre, data=df)
+leveneTest(write ~ gender, data=df)
 bartlett.test(formula, df)
 
+# Preconditions for parametric t-test failed, thus execute a non-parametric 
+# test for the significance in differences in mean
 wilcox.test(men_write$write, women_write$write)
+# Test whether women specifically have a *higher* grade than men.
 wilcox.test(men_write$write, women_write$write, alternative = "less")
 
-
+# ANOVA test on whether previous program influences writing score.
+# We perform an ANOVA test since the mode of the prog variable is > 2.
 formula = write ~ prog
 anova <- aov(formula, data=df)
 summary(anova)
 
-# variance analysis
-leveneTest(formula, data=df)
+# Perform variance analysis.
+leveneTest(formula, df)
 bartlett.test(formula, df)
 # homogeneity confirmed
 
-# normality test
+# Perform normality test.
 shapiro.test(anova$res)
 # not normal
 
-# check mean
+# Test whether the mean is well behaved by examining the resulting boxplot.
 my_save_plot("write_prog_boxplot", boxplot, formula=formula, data=df)
 # not good mean
 
-# non-parametric means test
+# We thus perform a non-parametric ANOVA test.
 kruskal.test(formula, data=df)
 # significant differences
 # show boxplots
 
 
 # ===== erotima c =====
-math_model = lm(math ~ .,df)
+
+# Create the base model which attempts to predict the math score based on 
+# other variables except for the id (and obviously the math variable itself).
+math_model = lm(math ~ . - id,df)
 summary(math_model)
 
-# check for outliers
-
-# manually saved because of multiple functioned used for one plot
+# Plot normalized residuals in order to check for outliers.
+# Plot manually saved because of multiple functions used for one plot.
 filepath = filepath_png("lm_math_residual_plot")
 png(filepath)
 plot(math_model$fit, rstandard(math_model))
@@ -131,59 +162,78 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 dev.off()
 # no outliers found
 
-# check for normality
+# Check for normality
 shapiro.test(rstandard(math_model))
 
-W#check for homogeneity
+# Check for homogeneity.
+
+# A function that breaks a numeric list into its 4 quantiles
 quantcut <- function(x, digits=6) { 
     cut(x, breaks=quantile(x), include.lowest=TRUE, dig.lab = digits) 
 }
 
+# Split the fitted values, split among the 4 quantiles
 qfits <- quantcut(math_model$fit)
+# Homogeneity test.
 leveneTest(rstandard(math_model), qfits)
+# Plot the residuals against their quantiles and save the boxplot to the disk.
 my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, boxcol=0,boxfill=3, medlwd=2, 
         medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
         ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
 
-# check for autocorrelation
+# Check for variable autocorrelation
 durbinWatsonTest(math_model)
 durbinWatsonTest(math_model, method="normal")
 
-no_race_model = lm(math ~ genre + prog + write + socst, data=df)
+# Race doesn't seem to be statistically significant, we thus remove it from 
+# our model
+no_race_model = lm(math ~ gender + prog + write + socst, data=df)
 summary(no_race_model)
 
-optimized_math_model = lm(math ~ genre + prog + write + socst + race, data=df)
+# This model has a worse adjusted r squared score and thus we re-instate the race
+# variable. All other variables are statistically significant, and thus kept.
+optimized_math_model = lm(math ~ gender + prog + write + socst + race, data=df)
 summary(optimized_math_model)
 
 # Do we need to re-check preconditions here?
 
+# Output model summary to latex.
 library(stargazer)
 stargazer(optimized_math_model, type="latex", 
           title="Linear regression model predicting math test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_math_peeking", df=T,
           out="lm_math_peeking.tex")
 
-socst_model_orig = lm(socst ~ . - id,df)
+
+# Create the base model which attempts to predict the social studies score based on 
+# other variables except for the id (and obviously the socst variable itself).
+socst_model_orig = lm(socst ~ . - id, df)
 summary(socst_model)
 
-# check for outliers
+# Plot normalized residuals in order to check for outliers.
+# Plot manually saved because of multiple functions used for one plot.
 filepath = filepath_png("lm_socst_residual_plot")
 png(filepath)
 plot(socst_model_orig$fit, rstandard(socst_model_orig))
 abline(h=-1.96, col='red', lwd=2, lty=2)
 abline(h=1.96, col='red', lwd=2, lty=2)
 dev.off()
+# Use the identify function to find the outlier's index
 #identify(socst_model_orig$fit, rstandard(socst_model_orig),n=1)
 # outlier 163 found
 
+# Check the details of the outlier
 df[163,]
 
+# Re-run the model without the outlier
 socst_model = lm(socst ~ . -id ,df[-163,])
 summary(socst_model)
 
-# check for normality
+# Check for normal residuals
 shapiro.test(rstandard(socst_model))
 
+# As above, check for residual homogeneity by checking the normalized residuals
+# for each of the respective fitted values' quantiles
 qfits <- quantcut(socst_model$fit)
 leveneTest(rstandard(socst_model), qfits)
 my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits, 
@@ -191,10 +241,11 @@ my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits,
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"))
 
-# check for autocorrelation
+# Check for autocorrelation
 durbinWatsonTest(socst_model)
 durbinWatsonTest(socst_model, method="normal")
 
+# Use an automated stepwise model selection routine to determine best model (by AIC)
 library(MASS)
 fullModel = lm(socst ~ . - id, data = df[-163,]) 
 nullModel = lm(socst ~ 1, data = df[-163,]) 
@@ -208,6 +259,7 @@ summary(optimal_socst_model)
 
 # Do we need to re-check preconditions here?
 
+# Output model summary to latex
 stargazer(optimal_socst_model, type="latex", 
           title="Linear regression model predicting social study test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_socst_peeking", df=T,
@@ -216,10 +268,11 @@ stargazer(optimal_socst_model, type="latex",
 
 # ===== erotima d =====
 
-no_peek_mmodel = lm(math ~ genre + race + schtyp + prog + socst, data=df)
+# Base math model is equivalent to the one used above, without the writing score variable
+no_peek_mmodel = lm(math ~ gender + race + schtyp + prog + socst, data=df)
 summary(no_peek_mmodel)
 
-# manually saved because of multiple functioned used for one plot
+# Repeat previously established routine to check for outliers
 filepath = filepath_png("lm_math_nopeeking_residual_plot")
 png(filepath)
 plot(no_peek_mmodel$fit, rstandard(no_peek_mmodel))
@@ -229,9 +282,10 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 # possible outliers: 22, 37, 194
 dev.off()
 
-# check for normality
+# Check for normal residuals
 shapiro.test(rstandard(no_peek_mmodel))
 
+# Repeat previously established routine to check for homogeneity
 qfits <- quantcut(no_peek_mmodel$fit)
 leveneTest(rstandard(no_peek_mmodel), qfits)
 my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
@@ -239,10 +293,11 @@ my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mm
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
 
-# check for autocorrelation
+# Check for autocorrelation
 durbinWatsonTest(no_peek_mmodel)
 durbinWatsonTest(no_peek_mmodel, method="normal")
 
+# This time use a backward model selection routine, starting from the full model
 fullModel = lm(math ~ . - id - write, data = df) 
 nullModel = lm(math ~ 1, data = df) 
 optimal_nopeek_mmodel = stepAIC(no_peek_mmodel,
@@ -254,15 +309,17 @@ summary(optimal_nopeek_mmodel)
 
 # Do we need to re-check preconditions here?
 
+# Output table to latex
 stargazer(optimal_nopeek_mmodel, type="latex", 
           title="Linear regression model predicting math test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_math_nopeeking", 
           df=T, out="lm_math_nopeeking.tex", report=('vc*p'))
 
-socst_nopeek_model = lm(socst ~ genre + race + schtyp + prog + math, data=df)
+# Similarly, the base model for social studies, without including the writing scores
+socst_nopeek_model = lm(socst ~ gender + race + schtyp + prog + math, data=df)
 summary(socst_nopeek_model)
 
-# manually saved because of multiple functioned used for one plot
+# Repeat previously established routine to check for outliers
 filepath = filepath_png("lm_socst_nopeeking_residual_plot")
 png(filepath)
 plot(socst_nopeek_model$fit, rstandard(socst_nopeek_model))
@@ -274,6 +331,7 @@ dev.off()
 # check for normality
 shapiro.test(rstandard(socst_nopeek_model))
 
+# Repeat previously established routine to check for homogeneity
 qfits <- quantcut(socst_nopeek_model$fit)
 leveneTest(rstandard(socst_nopeek_model), qfits)
 my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
@@ -281,10 +339,11 @@ my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nop
           col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
           names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
 
-# check for autocorrelation
+# Check for autocorrelation
 durbinWatsonTest(socst_nopeek_model)
 durbinWatsonTest(socst_nopeek_model, method="normal")
 
+# Use an automated stepwise model selection routine to determine best model (by AIC)
 fullModel = lm(socst ~ . - id - write, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
 optimal_socst_nopeek_model = stepAIC(socst_nopeek_model,
@@ -294,9 +353,13 @@ optimal_socst_nopeek_model = stepAIC(socst_nopeek_model,
                                 trace = 0)
 summary(optimal_socst_nopeek_model)
 
+# Notice that while the base model has better adjusted R squared, it has a worse
+# AIC score. We use the model found with the stepwise routine for reasons outlined
+# in the report.
 AIC(optimal_socst_model)
 AIC(socst_nopeek_model)
 
+# Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
           title="Linear regression model predicting social study test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_socst_nopeeking",
