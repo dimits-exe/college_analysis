@@ -5,7 +5,7 @@
 \usepackage{alphabeta}
 \usepackage{libertine}
 \usepackage{graphicx}
-\usepackage{biblatex}[sorting=nty]
+\usepackage{biblatex}[sorting=nty] % sort alphabetically
 \usepackage[table]{xcolor}
 \usepackage{mathptmx} % Times New Roman
 \usepackage{makecell}
@@ -80,8 +80,7 @@
 		\label{tab::dataset}
 	\end{table}
 	
-	
-	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
+	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats} and their distribution can be seen in Figure . We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
 	
 	\begin{table}
 		\centering
@@ -99,54 +98,21 @@
 		\caption{Summary statistics on the numerical data used in the study.}
 		\label{tab::summary_stats}
 	\end{table}
-	
-	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p\_value = 0.015$), which can be seen in Table \ref{tab::chisq}.
-	
-	\begin{table}
+
+	\begin{figure}
+		\includegraphics[width=8cm]{density_plots.png}
 		\centering
-		\rowcolors{2}{gray!25}{white}
-		\begin{tabular}
-			{ |p{2cm} | p{1.2cm} p{1.2cm} p{1.2cm} | p{1.2cm} | }
-			\hline
-			\multicolumn{5}{|c|}{\textbf{Previous Program}}\\
-			\hline
-			\textbf{School Type} & \textbf{general} & \textbf{academic} & \textbf{vocation} & \textbf{Total}\\
-			\hline
-			\textbf{public} & \makecell{39 \\ $23.2\%$} & \makecell{81 \\ $48.2\%$} & \makecell{48 \\ $28.6\%$} & \makecell{168 \\ $100\%$} \\
-			\textbf{private} & \makecell{6 \\ $18.8\%$} & \makecell{24 \\ $75\%$} & \makecell{2 \\ $6.2\%$} & \makecell{32 \\ $100\%$}\\
-			\hline
-			\textbf{Total} & \makecell{45 \\ $22.5\%$} & \makecell{105 \\ $52.5\%$} & \makecell{50 \\ $25\%$} & \makecell{200 \\ $100\%$}\\
-			\hline
-		\end{tabular}
-		\caption{$\chi^2$ test between \textit{School Type} and \textit{Program}. Notice the overwhelming majority of candidates who attended private schools having an academic background prior to applying.}
-		\label{tab::chisq}
-	\end{table}
+		\caption{Plots displaying the test score's distributions in our dataset.}
+		\label{fig::test_distribution}
+	\end{figure}
+		
+	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p\_value = 0.015$), which can be seen in the Addendum.
 	
-	
-	Finally, we study the relationships between the three subjects. As shown in Table \ref{tab::corr}, there is a very statistically significant ($p\_value = 0.0000$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as \textit{"Competence"} in this report.
+	Finally, we study the relationships between the three subjects. There is a very statistically significant ($p\_value = 0.0000$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as \textit{"Competence"} in this report.
 	
 	Since the three subjects are strongly correlated we can explore correlations between the rest of the factors and any of the tests, assuming that a correlation with one strongly indicates with the other two as well. 
 	
 	We notice a probable correlation between gender and writing scores, as shown in Figure \ref{fig::write_gender}, as well as between the student's program and writing scores, as shown in Figure \ref{fig::write_prog}.
-	
-	\begin{table}
-		\centering
-		\rowcolors{2}{gray!25}{white}
-		\begin{tabular}
-			{ |p{2.5cm} | p{2.5cm} | p{2.5cm}  | p{2.5cm} | }
-			\hline
-			& \textbf{Writing} & \textbf{Math} & \textbf{Social Studies} \\
-			\hline
-			\textbf{Writing} & \cellcolor{darkgray} & \cellcolor{darkgray} & \cellcolor{darkgray} \\
-			\hline
-			\textbf{Math} & \makecell{$0.62$\\ $0.000$ ****} & \cellcolor{darkgray} & \cellcolor{darkgray}\\
-			\hline
-			\textbf{Social Studies} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\cellcolor{darkgray}\\
-			\hline
-		\end{tabular}
-		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'.}
-		\label{tab::corr}
-	\end{table}
 	
 	\begin{figure}
 		\includegraphics[width=6cm]{write_genre_boxplot.png}
@@ -262,14 +228,53 @@
 	\subsection{Exploratory Analysis}
 	In this section we include tables and figures which were used in the exploratory analysis of the data in the Introduction. 
 	
-	\begin{figure}
+	\begin{table}
+		\centering
+		\rowcolors{2}{gray!25}{white}
+		\begin{tabular}
+			{ |p{2.5cm} | p{2.5cm} | p{2.5cm}  | p{2.5cm} | }
+			\hline
+			& \textbf{Writing} & \textbf{Math} & \textbf{Social Studies} \\
+			\hline
+			\textbf{Writing} & \cellcolor{darkgray} & \cellcolor{darkgray} & \cellcolor{darkgray} \\
+			\hline
+			\textbf{Math} & \makecell{$0.62$\\ $0.000$ ****} & \cellcolor{darkgray} & \cellcolor{darkgray}\\
+			\hline
+			\textbf{Social Studies} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\cellcolor{darkgray}\\
+			\hline
+		\end{tabular}
+		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'.}
+		\label{tab::corr}
+	\end{table}
+
+	\begin{table}
+		\centering
+		\rowcolors{2}{gray!25}{white}
+		\begin{tabular}
+			{ |p{2cm} | p{1.2cm} p{1.2cm} p{1.2cm} | p{1.2cm} | }
+			\hline
+			\multicolumn{5}{|c|}{\textbf{Previous Program}}\\
+			\hline
+			\textbf{School Type} & \textbf{general} & \textbf{academic} & \textbf{vocation} & \textbf{Total}\\
+			\hline
+			\textbf{public} & \makecell{39 \\ $23.2\%$} & \makecell{81 \\ $48.2\%$} & \makecell{48 \\ $28.6\%$} & \makecell{168 \\ $100\%$} \\
+			\textbf{private} & \makecell{6 \\ $18.8\%$} & \makecell{24 \\ $75\%$} & \makecell{2 \\ $6.2\%$} & \makecell{32 \\ $100\%$}\\
+			\hline
+			\textbf{Total} & \makecell{45 \\ $22.5\%$} & \makecell{105 \\ $52.5\%$} & \makecell{50 \\ $25\%$} & \makecell{200 \\ $100\%$}\\
+			\hline
+		\end{tabular}
+		\caption{$\chi^2$ test between \textit{School Type} and \textit{Program}. Notice the overwhelming majority of candidates who attended private schools having an academic background prior to applying.}
+		\label{tab::chisq}
+	\end{table}
+	
+	\begin{figure}[h]
 		\includegraphics[width=8cm]{write_schtyp_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by school type.}
 		\label{fig::write_schtyp_boxplot}
 	\end{figure}
 	
-	\begin{figure}
+	\begin{figure}[h]
 		\includegraphics[width=8cm]{write_race_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by candidate race.}

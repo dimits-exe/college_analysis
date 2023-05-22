@@ -48,6 +48,7 @@ class(df$write)
 class(df$socst)
 df
 
+
 # Get summary statistics from each of the quantitative variables.
 library(psych)
 describe(df$write)
@@ -56,6 +57,22 @@ describe(df$socst)
 
 # Check for relationships between numerical variables.
 corr.test(df[6:8], adjust="holm")
+
+# Utility function which produces 
+density_plot <- function(x, title) {
+  d <- density(x)
+  plot(d, xlab="Test score", main=title)
+  polygon(d, col="lightblue", border="black")
+}
+
+# Plot and save
+filepath = filepath_png("density_plots")
+png(filepath)
+par(mfrow=c(1,3))    # set the plotting area into a 1*3 array
+density_plot(df$write, "Writing test scores")
+density_plot(df$math, "Math test scores")
+density_plot(df$write, "Social studies test scores")
+dev.off()
 
 # Perform correlation test on categorical variables.
 # Manually test all combinations between all variables.
