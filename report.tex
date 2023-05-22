@@ -1,6 +1,5 @@
-\documentclass[10pt]{article}
+\documentclass[10pt, a4paper]{article}
 
-\usepackage{enumerate}
 \usepackage[utf8]{inputenc}
 \usepackage[greek, english]{babel}
 \usepackage{alphabeta}
@@ -11,11 +10,11 @@
 \usepackage{hyperref}
 \usepackage[table]{xcolor}
 \usepackage{mathptmx} % Times New Roman
-\usepackage{lipsum}  
 \usepackage{makecell}
+\usepackage{setspace}
 
 \pagenumbering{arabic}
-
+\onehalfspacing % Set line spacing to 1.5
 
 \newcommand{\linkstyle}[1]{\color{blue}\underline{#1}}
 
@@ -50,7 +49,7 @@
 	\newpage
 	
 	\section{Abstract}
-	US College Admissions have and continue to be a subject of great debate among scholars and analysts. Such educational institutions have an interest in selecting the most qualified applicants using limited data, while the applicants themselves often protest admission requirements, especially those deemed discriminatory in nature. This study aims to analyze the factors that contribute to successful admissions in US colleges and universities by comparing their performance on standardized tests.
+	US College Admissions have and continue to be a subject of great debate among scholars and analysts. Such educational institutions have an interest in selecting the most qualified applicants using limited data, while the applicants themselves often protest admission requirements, especially those deemed discriminatory in nature. In this study we discover relationships between the candidate's gender and previous program and their overall test scores. We also identify a positive correlation between test scores, which we attribute to a common, unknown variable called "Competence".
 	
 	
 	\section{Introduction}
@@ -59,7 +58,7 @@
 	
 	The data and replication code can be found in our GitHub repository \footnote{\url{https://github.com/dimits-exe/college_analysis}}. We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students (and as such are considered independent samples).
 	
-	The study is structured as follows: In Section \ref{sec::exploratory} we make general observations about our data, identify key relationships and form our first hypotheses. We follow up these hypotheses in Section \ref{sec::var_cors} with robust analyses and in Section \ref{sec::models} by employing various regression models. Section \ref{sec::conclusions} features an overview and discussion about our findings. Finally, in Section \ref{sec::addendum} we include graphs, tables and supporting documents.
+	The study is structured as follows: In Section \ref{sec::exploratory} we make general observations about our data, identify key relationships and form our first hypotheses. We follow up these hypotheses in Section \ref{sec::var_cors} with robust analyses and in Section \ref{sec::models} by employing various regression models. Section \ref{sec::conclusions} features an overview and discussion about our findings. Finally, we include graphs, tables and supporting documents in the report's Addendum (Section \ref{sec::addendum}).
 	
 	
 	\section{Exploratory Analysis}
@@ -151,7 +150,7 @@
 			\textbf{Social Studies} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\cellcolor{darkgray}\\
 			\hline
 		\end{tabular}
-		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'}
+		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'.}
 		\label{tab::corr}
 	\end{table}
 	
@@ -244,6 +243,7 @@
 	\section{References}
 	\printbibliography[heading=none]
 	
+	\newpage
 	\section{Addendum}
 	\label{sec::addendum}
 	
