@@ -190,21 +190,21 @@ summary(no_race_model)
 
 # This model has a worse adjusted r squared score and thus we re-instate the race
 # variable. All other variables are statistically significant, and thus kept.
-optimized_math_model = lm(math ~ gender + prog + write + socst + race, data=df)
-summary(optimized_math_model)
+optimal_math_model = lm(math ~ gender + prog + write + socst + race, data=df)
+summary(optimal_math_model)
 
 # Compare BIC values between the two models
 BIC(math_model)
-BIC(optimized_math_model)
+BIC(optimal_math_model)
 
 # Perform Bonferroni outlier test
-outlierTest(optimized_math_model)
+outlierTest(optimal_math_model)
 # examine outlier
 df[194,]
 
 # Check for normality
-shapiro.test(rstandard(optimized_math_model))
-lillie.test(rstandard(optimized_math_model)) #TODO: examine this
+shapiro.test(rstandard(optimal_math_model))
+lillie.test(rstandard(optimal_math_model)) #TODO: examine this
 
 # Check for homogeneity.
 
@@ -214,26 +214,29 @@ quantcut <- function(x, digits=6) {
 }
 
 # Split the fitted values, split among the 4 quantiles
-qfits <- quantcut(optimized_math_model$fit)
+qfits <- quantcut(optimal_math_model$fit)
 # Homogeneity test.
-leveneTest(rstandard(optimized_math_model), qfits)
-bartlett.test(rstandard(optimized_math_model), qfits)
+leveneTest(rstandard(optimal_math_model), qfits)
+bartlett.test(rstandard(optimal_math_model), qfits)
 # Plot the residuals against their quantiles and save the boxplot to the disk.
-my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(optimized_math_model)~qfits, 
+my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(optimal_math_model)~qfits, 
              boxcol=0,boxfill=3, medlwd=2, 
              medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
              ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
 
 # Check for variable autocorrelation
-durbinWatsonTest(optimized_math_model)
-durbinWatsonTest(optimized_math_model, method="normal")
+durbinWatsonTest(optimal_math_model)
+durbinWatsonTest(optimal_math_model, method="normal")
 
 # Check for multi-colinearity
-vif(optimized_math_model)
+vif(optimal_math_model)
+
+#check for linearity
+plot(optimal_math_model, 1) #TODO: examine this
 
 # Output model summary to latex.
 library(stargazer)
-stargazer(optimized_math_model, type="latex", 
+stargazer(optimal_math_model, type="latex", 
           title="Linear regression model predicting math test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_math_peeking", df=T,
           out="lm_math_peeking.tex", report=('vc*p'))
@@ -259,16 +262,16 @@ dev.off()
 # Check the details of the outlier
 df[163,]
 
-# Use an automated stepwise model selection routine to determine best model (by AIC)
+# Use an automated stepwise model selection routine to determine best model (by BIC)
 fullModel = lm(socst ~ . - id, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
 optimal_socst_model = step(
-  socst_model,
-  direction = 'both', 
-  scope = list(upper = fullModel, 
-               lower = nullModel), 
-  trace = 0, # do not show the step-by-step process of model selection
-  k=2) #choose by BIC as we want the best explanatory, not predictive model 
+      socst_model,
+      direction = 'both', 
+      scope = list(upper = fullModel, 
+                   lower = nullModel), 
+      trace = 0, # do not show the step-by-step process of model selection
+      k=2) #choose by BIC as we want the best explanatory, not predictive model 
 
 # View optimal model stats
 summary(optimal_socst_model)
@@ -302,6 +305,9 @@ durbinWatsonTest(optimal_socst_model, method="normal")
 
 # Check for multi-colinearity
 vif(optimal_socst_model)
+
+#check for linearity
+plot(optimal_socst_model, 1)
 
 # Output model summary to latex
 stargazer(optimal_socst_model, type="latex", 
@@ -365,6 +371,9 @@ durbinWatsonTest(optimal_nopeek_math_model, method="normal")
 # Check for multi-colinearity
 vif(optimal_nopeek_math_model)
 
+# Check linearity
+plot(optimal_nopeek_math_model, 1) #TODO: examine this
+
 # Output table to latex
 stargazer(optimal_nopeek_math_model, type="latex", 
           title="Linear regression model predicting math test scores, 
@@ -421,6 +430,9 @@ durbinWatsonTest(optimal_socst_nopeek_model, method="normal")
 
 # Check for multi-colinearity
 vif(optimal_socst_nopeek_model)
+
+# Check for linearity
+plot(optimal_socst_nopeek_model, 1)
 
 # Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
