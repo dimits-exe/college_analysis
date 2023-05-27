@@ -272,17 +272,18 @@ durbinWatsonTest(socst_model)
 durbinWatsonTest(socst_model, method="normal")
 
 # Use an automated stepwise model selection routine to determine best model (by AIC)
-library(MASS)
 fullModel = lm(socst ~ . - id, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
-optimal_socst_model = stepAIC(
+optimal_socst_model = step(
                   socst_model,
                   direction = 'both', 
                   scope = list(upper = fullModel, 
                                lower = nullModel), 
-                  trace = 0) # do not show the step-by-step process of model selection
+                  trace = 0, # do not show the step-by-step process of model selection
+                  k=2) #choose by BIC as we want the best explanatory, not predictive model 
+# View optimal model stats
 summary(optimal_socst_model)
-
+BIC(optimal_socst_model)
 # Do we need to re-check preconditions here?
 
 # Output model summary to latex
@@ -332,12 +333,12 @@ durbinWatsonTest(no_peek_mmodel, method="normal")
 # This time use a backward model selection routine, starting from the full model
 fullModel = lm(math ~ . - id - write, data = df) 
 nullModel = lm(math ~ 1, data = df) 
-optimal_nopeek_mmodel = stepAIC(no_peek_mmodel,
-                              direction = 'backward', 
-                              scope = list(upper = fullModel, 
-                                           lower = nullModel), 
-                              trace = 0)
+optimal_socst_model = step(fullModel, direction = 'both',
+                          scope = list(upper = fullModel, lower = nullModel), 
+                          trace = 0,  k=2)
+# View optimal model stats
 summary(optimal_nopeek_mmodel)
+BIC(optimal_socst_model)
 
 # Do we need to re-check preconditions here?
 
@@ -383,18 +384,12 @@ durbinWatsonTest(socst_nopeek_model, method="normal")
 # Use an automated stepwise model selection routine to determine best model (by AIC)
 fullModel = lm(socst ~ . - id - write, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
-optimal_socst_nopeek_model = stepAIC(socst_nopeek_model,
-                                direction = 'both', 
-                                scope = list(upper = fullModel, 
-                                             lower = nullModel), 
-                                trace = 0)
+optimal_socst_nopeek_model = step(socst_nopeek_model, direction = 'both',
+                                  scope = list(upper = fullModel, lower = nullModel), 
+                                  trace = 0,  k=2)
+# View optimal model stats
 summary(optimal_socst_nopeek_model)
-
-# Notice that while the base model has better adjusted R squared, it has a worse
-# AIC score. We use the model found with the stepwise routine for reasons outlined
-# in the report.
-AIC(optimal_socst_model)
-AIC(socst_nopeek_model)
+BIC(optimal_socst_nopeek_model)
 
 # Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
