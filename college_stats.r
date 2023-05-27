@@ -118,8 +118,11 @@ diff
 # Check if differences are normal by making a qqplot.
 qqnorm(diff)
 qqline(diff)
-# Plot is inconclusive, thus run a shapiro normality test.
+
+# Plot is inconclusive, thus run shapiro and lillie normality test.
 shapiro.test(diff)
+library(nortest)
+lillie.test(diff)
 
 # Test whether the mean is well behaved by examining the normality of the 
 # residuals' kurtosis.
@@ -150,6 +153,7 @@ bartlett.test(formula, df)
 
 # Perform normality test.
 shapiro.test(anova$res)
+lillie.test(anova$res)
 # not normal
 
 # Test whether the mean is well behaved by examining the resulting boxplot.
@@ -179,36 +183,6 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 dev.off()
 # no outliers found
 
-# Perform Bonferroni outlier test
-outlierTest(math_model)
-# examine outlier
-df[194,]
-
-# Check for normality
-shapiro.test(rstandard(math_model))
-
-# Check for homogeneity.
-
-# A function that breaks a numeric list into its 4 quantiles
-quantcut <- function(x, digits=6) { 
-    cut(x, breaks=quantile(x), include.lowest=TRUE, dig.lab = digits) 
-}
-
-# Split the fitted values, split among the 4 quantiles
-qfits <- quantcut(math_model$fit)
-# Homogeneity test.
-leveneTest(rstandard(math_model), qfits)
-bartlett.test(rstandard(math_model), qfits)
-# Plot the residuals against their quantiles and save the boxplot to the disk.
-my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, 
-             boxcol=0,boxfill=3, medlwd=2, 
-        medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
-        ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
-
-# Check for variable autocorrelation
-durbinWatsonTest(math_model)
-durbinWatsonTest(math_model, method="normal")
-
 # Race doesn't seem to be statistically significant, we thus remove it from 
 # our model
 no_race_model = lm(math ~ gender + prog + write + socst, data=df)
@@ -219,7 +193,40 @@ summary(no_race_model)
 optimized_math_model = lm(math ~ gender + prog + write + socst + race, data=df)
 summary(optimized_math_model)
 
-# Do we need to re-check preconditions here?
+# Compare BIC values between the two models
+BIC(math_model)
+BIC(optimized_math_model)
+
+# Perform Bonferroni outlier test
+outlierTest(optimized_math_model)
+# examine outlier
+df[194,]
+
+# Check for normality
+shapiro.test(rstandard(optimized_math_model))
+lillie.test(rstandard(optimized_math_model)) #TODO: examine this
+
+# Check for homogeneity.
+
+# A function that breaks a numeric list into its 4 quantiles
+quantcut <- function(x, digits=6) { 
+  cut(x, breaks=quantile(x), include.lowest=TRUE, dig.lab = digits) 
+}
+
+# Split the fitted values, split among the 4 quantiles
+qfits <- quantcut(optimized_math_model$fit)
+# Homogeneity test.
+leveneTest(rstandard(optimized_math_model), qfits)
+bartlett.test(rstandard(optimized_math_model), qfits)
+# Plot the residuals against their quantiles and save the boxplot to the disk.
+my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(optimized_math_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, 
+             medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
+             ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
+
+# Check for variable autocorrelation
+durbinWatsonTest(optimized_math_model)
+durbinWatsonTest(optimized_math_model, method="normal")
 
 # Output model summary to latex.
 library(stargazer)
@@ -249,42 +256,46 @@ dev.off()
 # Check the details of the outlier
 df[163,]
 
-# Perform Bonferroni outlier test
-outlierTest(socst_model)
-# Examine outlier
-df[147,]
-
-# Check for normal residuals
-shapiro.test(rstandard(socst_model))
-
-# As above, check for residual homogeneity by checking the normalized residuals
-# for each of the respective fitted values' quantiles
-qfits <- quantcut(socst_model$fit)
-leveneTest(rstandard(socst_model), qfits)
-bartlett.test(rstandard(socst_model), qfits)
-my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(socst_model)~qfits, 
-          boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
-          col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
-          names=c("Q1","Q2","Q3","Q4"))
-
-# Check for autocorrelation
-durbinWatsonTest(socst_model)
-durbinWatsonTest(socst_model, method="normal")
-
 # Use an automated stepwise model selection routine to determine best model (by AIC)
 fullModel = lm(socst ~ . - id, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
 optimal_socst_model = step(
-                  socst_model,
-                  direction = 'both', 
-                  scope = list(upper = fullModel, 
-                               lower = nullModel), 
-                  trace = 0, # do not show the step-by-step process of model selection
-                  k=2) #choose by BIC as we want the best explanatory, not predictive model 
+  socst_model,
+  direction = 'both', 
+  scope = list(upper = fullModel, 
+               lower = nullModel), 
+  trace = 0, # do not show the step-by-step process of model selection
+  k=2) #choose by BIC as we want the best explanatory, not predictive model 
+
 # View optimal model stats
 summary(optimal_socst_model)
+
+# Compare BIC values
+BIC(socst_model)
 BIC(optimal_socst_model)
-# Do we need to re-check preconditions here?
+
+# Perform Bonferroni outlier test
+outlierTest(optimal_socst_model)
+# Examine outlier
+df[147,]
+
+# Check for normal residuals
+shapiro.test(rstandard(optimal_socst_model))
+lillie.test(rstandard(optimal_socst_model)) #TODO: check this
+
+# As above, check for residual homogeneity by checking the normalized residuals
+# for each of the respective fitted values' quantiles
+qfits <- quantcut(optimal_socst_model$fit)
+leveneTest(rstandard(optimal_socst_model), qfits)
+bartlett.test(rstandard(optimal_socst_model), qfits)
+my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(optimal_socst_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+             col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+             names=c("Q1","Q2","Q3","Q4"))
+
+# Check for autocorrelation
+durbinWatsonTest(optimal_socst_model)
+durbinWatsonTest(optimal_socst_model, method="normal")
 
 # Output model summary to latex
 stargazer(optimal_socst_model, type="latex", 
@@ -309,41 +320,44 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 # possible outliers: 22, 37, 194
 dev.off()
 
+fullModel = lm(math ~ . - id - write, data = df) 
+nullModel = lm(math ~ 1, data = df) 
+optimal_nopeek_math_model = step(fullModel, direction = 'both',
+                           scope = list(upper = fullModel, lower = nullModel), 
+                           trace = 0,  k=2)
+# View optimal model stats
+summary(no_peek_mmodel)
+summary(optimal_nopeek_math_model)
+
+# Compare BIC values
+BIC(no_peek_mmodel)
+BIC(optimal_nopeek_math_model)
+
 # Perform bonferroni outlier test
-outlierTest(no_peek_mmodel)
+outlierTest(optimal_nopeek_math_model)
 # Examine outlier
 df[22,]
 
 # Check for normal residuals
-shapiro.test(rstandard(no_peek_mmodel))
+shapiro.test(rstandard(optimal_nopeek_math_model))
+lillie.test(rstandard(optimal_nopeek_math_model))
 
 # Repeat previously established routine to check for homogeneity
-qfits <- quantcut(no_peek_mmodel$fit)
-leveneTest(rstandard(no_peek_mmodel), qfits)
-bartlett.test(rstandard(no_peek_mmodel), qfits)
-my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, rstandard(no_peek_mmodel)~qfits, 
-          boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
-          col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
-          names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
+qfits <- quantcut(optimal_nopeek_math_model$fit)
+leveneTest(rstandard(optimal_nopeek_math_model), qfits)
+bartlett.test(rstandard(optimal_nopeek_math_model), qfits)
+my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot, 
+             rstandard(optimal_nopeek_math_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+             col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+             names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
 
 # Check for autocorrelation
-durbinWatsonTest(no_peek_mmodel)
-durbinWatsonTest(no_peek_mmodel, method="normal")
-
-# This time use a backward model selection routine, starting from the full model
-fullModel = lm(math ~ . - id - write, data = df) 
-nullModel = lm(math ~ 1, data = df) 
-optimal_socst_model = step(fullModel, direction = 'both',
-                          scope = list(upper = fullModel, lower = nullModel), 
-                          trace = 0,  k=2)
-# View optimal model stats
-summary(optimal_nopeek_mmodel)
-BIC(optimal_socst_model)
-
-# Do we need to re-check preconditions here?
+durbinWatsonTest(optimal_nopeek_math_model)
+durbinWatsonTest(optimal_nopeek_math_model, method="normal")
 
 # Output table to latex
-stargazer(optimal_nopeek_mmodel, type="latex", 
+stargazer(optimal_nopeek_math_model, type="latex", 
           title="Linear regression model predicting math test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_math_nopeeking", 
           df=T, out="lm_math_nopeeking.tex", report=('vc*p'))
@@ -361,26 +375,6 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 # no outliers
 dev.off()
 
-# Perform Bonferroni outlier test
-outlierTest(socst_nopeek_model)
-# same outlier as above socst model
-
-# check for normality
-shapiro.test(rstandard(socst_nopeek_model))
-
-# Repeat previously established routine to check for homogeneity
-qfits <- quantcut(socst_nopeek_model$fit)
-leveneTest(rstandard(socst_nopeek_model), qfits)
-bartlett.test(rstandard(socst_nopeek_model), qfits)
-my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, rstandard(socst_nopeek_model)~qfits, 
-          boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
-          col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
-          names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
-
-# Check for autocorrelation
-durbinWatsonTest(socst_nopeek_model)
-durbinWatsonTest(socst_nopeek_model, method="normal")
-
 # Use an automated stepwise model selection routine to determine best model (by AIC)
 fullModel = lm(socst ~ . - id - write, data = df) 
 nullModel = lm(socst ~ 1, data = df) 
@@ -389,7 +383,32 @@ optimal_socst_nopeek_model = step(socst_nopeek_model, direction = 'both',
                                   trace = 0,  k=2)
 # View optimal model stats
 summary(optimal_socst_nopeek_model)
+
+# Compare BIC values
+BIC(socst_nopeek_model)
 BIC(optimal_socst_nopeek_model)
+
+# Perform Bonferroni outlier test
+outlierTest(optimal_socst_nopeek_model)
+# same outlier as above socst model
+
+# check for normality
+shapiro.test(rstandard(optimal_socst_nopeek_model))
+lillie.test(rstandard(optimal_socst_nopeek_model))
+
+# Repeat previously established routine to check for homogeneity
+qfits <- quantcut(optimal_socst_nopeek_model$fit)
+leveneTest(rstandard(optimal_socst_nopeek_model), qfits)
+bartlett.test(rstandard(optimal_socst_nopeek_model), qfits)
+my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, 
+             rstandard(optimal_socst_nopeek_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+             col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+             names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
+
+# Check for autocorrelation
+durbinWatsonTest(optimal_socst_nopeek_model)
+durbinWatsonTest(optimal_socst_nopeek_model, method="normal")
 
 # Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
