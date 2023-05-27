@@ -179,6 +179,11 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 dev.off()
 # no outliers found
 
+# Perform Bonferroni outlier test
+outlierTest(math_model)
+# examine outlier
+df[194,]
+
 # Check for normality
 shapiro.test(rstandard(math_model))
 
@@ -195,7 +200,8 @@ qfits <- quantcut(math_model$fit)
 leveneTest(rstandard(math_model), qfits)
 bartlett.test(rstandard(math_model), qfits)
 # Plot the residuals against their quantiles and save the boxplot to the disk.
-my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, boxcol=0,boxfill=3, medlwd=2, 
+my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(math_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, 
         medcol="white", cex=1.5, pch=16, col='blue', xlab = "Quantiles", 
         ylab="Standardized residuals", names=c("Q1","Q2","Q3","Q4"))
 
@@ -225,7 +231,7 @@ stargazer(optimized_math_model, type="latex",
 
 # Create the base model which attempts to predict the social studies score based on 
 # other variables except for the id (and obviously the socst variable itself).
-socst_model_orig = lm(socst ~ . - id, df)
+socst_model = lm(socst ~ . - id, df)
 summary(socst_model)
 
 # Plot normalized residuals in order to check for outliers.
@@ -243,9 +249,10 @@ dev.off()
 # Check the details of the outlier
 df[163,]
 
-# Re-run the model without the outlier
-socst_model = lm(socst ~ . -id ,df[-163,])
-summary(socst_model)
+# Perform Bonferroni outlier test
+outlierTest(socst_model)
+# Examine outlier
+df[147,]
 
 # Check for normal residuals
 shapiro.test(rstandard(socst_model))
@@ -266,8 +273,8 @@ durbinWatsonTest(socst_model, method="normal")
 
 # Use an automated stepwise model selection routine to determine best model (by AIC)
 library(MASS)
-fullModel = lm(socst ~ . - id, data = df[-163,]) 
-nullModel = lm(socst ~ 1, data = df[-163,]) 
+fullModel = lm(socst ~ . - id, data = df) 
+nullModel = lm(socst ~ 1, data = df) 
 optimal_socst_model = stepAIC(
                   socst_model,
                   direction = 'both', 
@@ -300,6 +307,11 @@ abline(h=1.96, col='red', lwd=2, lty=2)
 #identify(no_peek_mmodel$fit, rstandard(no_peek_mmodel),n=3)
 # possible outliers: 22, 37, 194
 dev.off()
+
+# Perform bonferroni outlier test
+outlierTest(no_peek_mmodel)
+# Examine outlier
+df[22,]
 
 # Check for normal residuals
 shapiro.test(rstandard(no_peek_mmodel))
@@ -347,6 +359,10 @@ abline(h=-1.96, col='red', lwd=2, lty=2)
 abline(h=1.96, col='red', lwd=2, lty=2)
 # no outliers
 dev.off()
+
+# Perform Bonferroni outlier test
+outlierTest(socst_nopeek_model)
+# same outlier as above socst model
 
 # check for normality
 shapiro.test(rstandard(socst_nopeek_model))
