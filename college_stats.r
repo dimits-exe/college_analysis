@@ -228,6 +228,9 @@ my_save_plot("lm_math_residual_boxplot", boxplot, rstandard(optimized_math_model
 durbinWatsonTest(optimized_math_model)
 durbinWatsonTest(optimized_math_model, method="normal")
 
+# Check for multi-colinearity
+vif(optimized_math_model)
+
 # Output model summary to latex.
 library(stargazer)
 stargazer(optimized_math_model, type="latex", 
@@ -297,6 +300,9 @@ my_save_plot("lm_socst_residual_boxplot", boxplot, rstandard(optimal_socst_model
 durbinWatsonTest(optimal_socst_model)
 durbinWatsonTest(optimal_socst_model, method="normal")
 
+# Check for multi-colinearity
+vif(optimal_socst_model)
+
 # Output model summary to latex
 stargazer(optimal_socst_model, type="latex", 
           title="Linear regression model predicting social study test scores, taking into 
@@ -356,6 +362,9 @@ my_save_plot("lm_math_nopeeking_residual_boxplot", boxplot,
 durbinWatsonTest(optimal_nopeek_math_model)
 durbinWatsonTest(optimal_nopeek_math_model, method="normal")
 
+# Check for multi-colinearity
+vif(optimal_nopeek_math_model)
+
 # Output table to latex
 stargazer(optimal_nopeek_math_model, type="latex", 
           title="Linear regression model predicting math test scores, 
@@ -409,6 +418,9 @@ my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot,
 # Check for autocorrelation
 durbinWatsonTest(optimal_socst_nopeek_model)
 durbinWatsonTest(optimal_socst_nopeek_model, method="normal")
+
+# Check for multi-colinearity
+vif(optimal_socst_nopeek_model)
 
 # Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
