@@ -10,10 +10,13 @@ filepath_png <- function(name) {
 
 # Utility function to save a plot to the disk.
 my_save_plot <- function(name, plot_func, ...) {
+  # display plot
+  plot_func(...)
+  # save plot
   filepath = filepath_png(name)
   png(filepath)
   plot_func(...)
-  dev.off()
+  dev.off() # COMMENT THIS LINE TO PREVENT PLOT SAVING
 }
 
 # Import the data.
@@ -168,6 +171,7 @@ kruskal.test(formula, data=df)
 
 # ===== erotima c =====
 
+# ===== MATH MODEL  =====
 # Create the base model which attempts to predict the math score based on 
 # other variables except for the id (and obviously the math variable itself).
 math_model = lm(math ~ . - id,df)
@@ -235,8 +239,8 @@ durbinWatsonTest(optimal_math_model, method="normal")
 vif(optimal_math_model)
 
 #check for linearity
-plot(optimal_math_model, 1)
-# not linear
+my_save_plot("lm_math_linear_plot", plot, optimal_math_model, 1)
+# marginally not linear
 
 # Test whether logarithmic variables help linearity
 log_math_model = lm(log(math) ~ race + gender + prog + log(write) + log(socst), data=df)
@@ -252,25 +256,11 @@ stargazer(optimal_math_model, type="latex",
           out="lm_math_peeking.tex", report=('vc*p'))
 
 
+# ===== SOCST MODEL  =====
 # Create the base model which attempts to predict the social studies score based on 
 # other variables except for the id (and obviously the socst variable itself).
 socst_model = lm(socst ~ . - id, df)
 summary(socst_model)
-
-# Plot normalized residuals in order to check for outliers.
-# Plot manually saved because of multiple functions used for one plot.
-filepath = filepath_png("lm_socst_residual_plot")
-png(filepath)
-plot(socst_model_orig$fit, rstandard(socst_model_orig))
-abline(h=-1.96, col='red', lwd=2, lty=2)
-abline(h=1.96, col='red', lwd=2, lty=2)
-dev.off()
-# Use the identify function to find the outlier's index
-#identify(socst_model_orig$fit, rstandard(socst_model_orig),n=1)
-# outlier 163 found
-
-# Check the details of the outlier
-df[163,]
 
 # Use an automated stepwise model selection routine to determine best model (by BIC)
 fullModel = lm(socst ~ . - id, data = df) 
@@ -290,10 +280,23 @@ summary(optimal_socst_model)
 BIC(socst_model)
 BIC(optimal_socst_model)
 
+# Plot normalized residuals in order to check for outliers.
+# Plot manually saved because of multiple functions used for one plot.
+filepath = filepath_png("lm_socst_residual_plot")
+png(filepath)
+plot(optimal_socst_model$fit, rstandard(optimal_socst_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+dev.off()
+# Use the identify function to find the outlier's index
+#identify(socst_model_orig$fit, rstandard(socst_model_orig),n=1)
+# outlier 163 found
+# Examine outlier
+df[163,]
+
 # Perform Bonferroni outlier test
 outlierTest(optimal_socst_model)
-# Examine outlier
-df[147,]
+# no outliers
 
 # Check for normal residuals
 shapiro.test(rstandard(optimal_socst_model))
@@ -331,19 +334,10 @@ stargazer(optimal_socst_model, type="latex",
 
 # ===== erotima d =====
 
+# ===== MATH MODEL  =====
 # Base math model is equivalent to the one used above, without the writing score variable
 no_peek_mmodel = lm(math ~ gender + race + schtyp + prog + socst, data=df)
 summary(no_peek_mmodel)
-
-# Repeat previously established routine to check for outliers
-filepath = filepath_png("lm_math_nopeeking_residual_plot")
-png(filepath)
-plot(no_peek_mmodel$fit, rstandard(no_peek_mmodel))
-abline(h=-1.96, col='red', lwd=2, lty=2)
-abline(h=1.96, col='red', lwd=2, lty=2)
-#identify(no_peek_mmodel$fit, rstandard(no_peek_mmodel),n=3)
-# possible outliers: 22, 37, 194
-dev.off()
 
 fullModel = lm(math ~ . - id - write, data = df) 
 nullModel = lm(math ~ 1, data = df) 
@@ -351,12 +345,21 @@ optimal_nopeek_math_model = step(fullModel, direction = 'both',
                            scope = list(upper = fullModel, lower = nullModel), 
                            trace = 0,  k=2)
 # View optimal model stats
-summary(no_peek_mmodel)
 summary(optimal_nopeek_math_model)
 
 # Compare BIC values
 BIC(no_peek_mmodel)
 BIC(optimal_nopeek_math_model)
+
+# Repeat previously established routine to check for outliers
+filepath = filepath_png("lm_math_nopeeking_residual_plot")
+png(filepath)
+plot(optimal_nopeek_math_model$fit, rstandard(optimal_nopeek_math_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+#identify(optimal_nopeek_math_model$fit, rstandard(optimal_nopeek_math_model),n=3)
+# possible outliers: 22, 37, 194
+dev.off()
 
 # Perform bonferroni outlier test
 outlierTest(optimal_nopeek_math_model)
@@ -385,8 +388,8 @@ durbinWatsonTest(optimal_nopeek_math_model, method="normal")
 vif(optimal_nopeek_math_model)
 
 # Check linearity
-plot(optimal_nopeek_math_model, 1, asp=1) 
-# almost linear, we consider the test marginally passed 
+my_save_plot("lm_math_nopeek_linear_plot", plot,optimal_nopeek_math_model, 1, asp=1)
+# marginally not linear
 
 # Output table to latex
 stargazer(optimal_nopeek_math_model, type="latex", 
@@ -394,18 +397,11 @@ stargazer(optimal_nopeek_math_model, type="latex",
           without relying on the writing tests.", ci=T, label="tab::lm_math_nopeeking", 
           df=T, out="lm_math_nopeeking.tex", report=('vc*p'))
 
+
+# ===== SOCST MODEL  =====
 # Similarly, the base model for social studies, without including the writing scores
 socst_nopeek_model = lm(socst ~ gender + race + schtyp + prog + math, data=df)
 summary(socst_nopeek_model)
-
-# Repeat previously established routine to check for outliers
-filepath = filepath_png("lm_socst_nopeeking_residual_plot")
-png(filepath)
-plot(socst_nopeek_model$fit, rstandard(socst_nopeek_model))
-abline(h=-1.96, col='red', lwd=2, lty=2)
-abline(h=1.96, col='red', lwd=2, lty=2)
-# no outliers
-dev.off()
 
 # Use an automated stepwise model selection routine to determine best model (by AIC)
 fullModel = lm(socst ~ . - id - write, data = df) 
@@ -419,6 +415,15 @@ summary(optimal_socst_nopeek_model)
 # Compare BIC values
 BIC(socst_nopeek_model)
 BIC(optimal_socst_nopeek_model)
+
+# Repeat previously established routine to check for outliers
+filepath = filepath_png("lm_socst_nopeeking_residual_plot")
+png(filepath)
+plot(optimal_socst_nopeek_model$fit, rstandard(optimal_socst_nopeek_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+# no outliers
+dev.off()
 
 # Perform Bonferroni outlier test
 outlierTest(optimal_socst_nopeek_model)

@@ -176,7 +176,7 @@
 		\item Finally, depending on his race a candidate will score an average of $5$ (Asian), $-1.1$ (African American) or $0.308$ additional points.
 	\end{itemize}
 
-	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4581, BIC=1452$). The residuals are not sufficiently normal (S-W $p = 0.008$, Lillie $p=0.061$), homogeneous (Lev $p = 0.452$, Bart $p = 0.635$) and non-correlated (D-W, $p=0.848$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. Since the normality assumption can be waived because of our large sample size, we assume all preconditions are met.
+	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4581, BIC=1452$). The residuals are not sufficiently normal (S-W $p = 0.008$, Lillie $p=0.061$), homogeneous (Lev $p = 0.452$, Bart $p = 0.635$) and non-correlated (D-W, $p=0.848$). There appears to be no multicollinearity, the residuals are marginally not linear and there are no anomalies. Since the normality assumption can be waived because of our large sample size, we assume all preconditions are met, other than linearity.
 	
 	As mentioned above, this model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly not statistically significant. We thus employ a stepwise procedure in order to eliminate variables deemed statistically insignificant while retaining, or increasing our models goodness of fit. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking} and can be interpreted in a similar manner to the model above.
 	
@@ -190,7 +190,7 @@
 	
 	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and their score in the social studies test. Our initial model including all the variables performs adequately $R^2_{adj} = 0.3999, BIC=1404$. By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022, BIC=1395$, found in Table \ref{tab::lm_math_nopeeking}.
 	
-	We verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.863$, Lillie $p=0.885$), homogeneous (Lev $p = 0.431$, Bart $p = 0.42$) and non-correlated (D-W, $p=0.57$). There appears to be no multicollinearity, the residuals are marginally linear and there are no anomalies.
+	We verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.863$, Lillie $p=0.885$), homogeneous (Lev $p = 0.431$, Bart $p = 0.42$) and non-correlated (D-W, $p=0.57$). There appears to be no multicollinearity, the residuals are marginally not linear and there are no anomalies.
 	%
 	\input{lm_math_nopeeking.tex}
 	%
@@ -282,7 +282,23 @@
 	
 	\subsection{OLS model preconditions}
 	
-	In order to visually confirm the normal distribution of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot}, \ref{fig::lm_socst_nopeeking_boxplot} show models including only the other lesson's scores.
+	In order to check for the existence of a linear relationship between the model's residuals, we plot them against their values. A model is considered to have a linear relationship, if the conditional mean (red) line deviates from the horizontal reference line ($y=0$). Figures \ref{fig::lm_math_linear}, \ref{fig::lm_math_nopeek_linear} show the two math models whose conditional means show varying deviations from the reference line.
+	
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_math_linear_plot.png}
+		\centering
+		\caption{Linear reference plot for the original (optimal) math model. Notice the conditional mean (red) line shape deviating from $y=0$. This is evidence of something exerting influence over our data other than the model's variables.}
+		\label{fig::lm_math_linear}
+	\end{figure}
+
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_math_nopeek_linear_plot.png}
+		\centering
+		\caption{Linear reference plot for the second (optimal) math model. The conditional mean (red) line has an identical shape to the one in Figure \ref{fig::lm_math_linear}.}
+		\label{fig::lm_math_nopeek_linear}
+	\end{figure}
+	
+	In order to visually confirm the homogeneity of variances of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot}, \ref{fig::lm_socst_nopeeking_boxplot} show models including only the other lesson's scores.
 	
 	\begin{figure}
 		\includegraphics[width=8cm]{lm_math_residual_boxplot.png}
