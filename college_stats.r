@@ -204,7 +204,10 @@ df[194,]
 
 # Check for normality
 shapiro.test(rstandard(optimal_math_model))
-lillie.test(rstandard(optimal_math_model)) #TODO: examine this
+lillie.test(rstandard(optimal_math_model))
+qqnorm(rstandard(optimal_math_model))
+qqline(rstandard(optimal_math_model))
+# most likely not normal
 
 # Check for homogeneity.
 
@@ -232,7 +235,14 @@ durbinWatsonTest(optimal_math_model, method="normal")
 vif(optimal_math_model)
 
 #check for linearity
-plot(optimal_math_model, 1) #TODO: examine this
+plot(optimal_math_model, 1)
+# not linear
+
+# Test whether logarithmic variables help linearity
+log_math_model = lm(log(math) ~ race + gender + prog + log(write) + log(socst), data=df)
+summary(log_math_model)
+plot(log_math_model, 1)
+# They don't
 
 # Output model summary to latex.
 library(stargazer)
@@ -287,7 +297,10 @@ df[147,]
 
 # Check for normal residuals
 shapiro.test(rstandard(optimal_socst_model))
-lillie.test(rstandard(optimal_socst_model)) #TODO: check this
+lillie.test(rstandard(optimal_socst_model)) 
+
+qqnorm(rstandard(optimal_socst_model))
+qqline(rstandard(optimal_socst_model))
 
 # As above, check for residual homogeneity by checking the normalized residuals
 # for each of the respective fitted values' quantiles
@@ -372,7 +385,8 @@ durbinWatsonTest(optimal_nopeek_math_model, method="normal")
 vif(optimal_nopeek_math_model)
 
 # Check linearity
-plot(optimal_nopeek_math_model, 1) #TODO: examine this
+plot(optimal_nopeek_math_model, 1, asp=1) 
+# almost linear, we consider the test marginally passed 
 
 # Output table to latex
 stargazer(optimal_nopeek_math_model, type="latex", 
