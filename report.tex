@@ -16,6 +16,7 @@
 \graphicspath{ {./resources/} }
 \addbibresource{refs.bib}
 
+\def\code#1{\texttt{#1}}
 
 \title{\Huge A Comprehensive Study on US College Admissions  }
 
@@ -56,7 +57,7 @@
 	
 	For the sake of brevity we will refer to the following statistical tests with the following acronyms: Shapiro Wilk (S-W) and Lilliefors (Kolmogorov-Smirnov) (K-S) normality tests, Bartlett (Bart) and Levene's (Lev) tests of homogeneity of variances, Durbin Watson (D-W) autocorrelation test, Wilcoxon (Wil) and Kruskal-Wallis (K-W) rank sum tests.
 	
-	
+	All the test, images and graphs were executed and built using \code{R $4.11$} and the \code{haven, nortest, car, psych, nortest, sjPlot} and \code{stargazer} libraries.
 	
 	\section{Exploratory Analysis}
 	\label{sec::exploratory}
@@ -149,66 +150,60 @@
 	We discover there is a statistically significant difference between the groups (K-S, $p=4e-08$). We can consult the boxplots in Figure \ref{fig::write_prog}, where we observe significant differences between all three groups.
 	
 	
-	\section{Predictive / interpretative models}
+	\section{Predictive / descriptive models}
 	\label{sec::models}
 	
-	\subsection{Building the base model}
+	\subsection{Building the base models}
 	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will estimate a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
 	
 	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
 	
-	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4753, F= 37.06 p=2.2e-16, df=194$). We also verify all the preconditions for the regression model; the residuals appear to be normal (S-W $p = 0.2099$), homogeneous (Lev $p = 0.5901$, Bart $p = 0.4609$) our variables are non-correlated (D-W, $p=0.232$) and there are no significant outliers (see Addendum).
+	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4861, BIC=1377$). However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.488, BIC=1372, F= 24.729 p=<0.001$. We use BIC to compare our models as they are descriptive, not predictive.
 	
-	Our current model exhibits high confidence about the candidate's gender, previous program, writing scores, social study scores and the constant. However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.4882$. Since the model maintains its confidence about the other variables, we keep it as the optimal one.
+	We briefly check the pre-conditions for linear regression. The residuals are not sufficiently normal (S-W $p = 0.0125$, Lillie $p=0.0241$), although this does not discourage us, since linear models have been robust against normality assumption violations for large samples ($N\geq 100$) \cite{ols_linear}. The residuals are homogeneous given a $95\%$ confidence level (Lev $p = 0.081$, Bart $p = 0.05368$) and non-correlated (D-W, $p=0.26$). There are also no sings of multicollinearity. While some outliers exist, none of them are considered anomalies.
 	
-	Our data are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and distribution (see Section \ref{sec::exploratory}). Thus, there is no reason for any mathematical transformation to be applied to our data.
-	
+	An issue with our model is that there doesn't seem to be a strong linear relationship (see Addendum). Our data however are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and distribution (see Section \ref{sec::exploratory}). Thus, our model performs worse when mathematical transformations such as logarithms are applied to our data.
+	%
 	\input{lm_math_peeking.tex}
-	
+	%
 	The resulting model can be found in Table \ref{tab::lm_math_peeking} and can be interpreted as such: 
 	\begin{itemize}
-		\item If a candidate is female, Hispanic, has a generic background, and completely failed her other tests (writing score = social studies score = 0), her score in the math test would be $20.334$ (equal to the Constant) (Very High confidence: $p_{intercept} = 8.29e-09$). 
-		\item For every point scored in the writing test, the math score would improve by 0.4 points (Very High confidence: $p_{write} = 3.57e-08$).
-		\item For every point scored in the social studies test, by 0.167 points (Very High confidence: $p_{socst} = 0.0053$).
-		\item If the candidate is male, he will score an average of $-2.8$ less points (High confidence: $p_{female} = 0.0056$).
-		\item Depending on his background the candidate will either on average score $3.788$ (academic) or $-0.375$ (vocational) additional points (High confidence: $p_{progacademic} = 0.0025$).
-		\item Finally, depending on his race a candidate will score an average of $5$ (Asian), $-1.1$ (African American) or $0.308$ additional points (High confidence: $p_{raceasian} = 0.05$).
+		\item If a candidate is female, Hispanic, has a generic background, and completely failed her other tests (writing score = social studies score = 0), her score in the math test would be $20.334$. 
+		\item For every point scored in the writing test, the math score would improve by 0.4 points.
+		\item For every point scored in the social studies test, by 0.167 points.
+		\item If the candidate is male, he will score an average of $-2.8$ less points.
+		\item Depending on his background the candidate will either on average score $3.788$ (academic) or $-0.375$ (vocational) additional points.
+		\item Finally, depending on his race a candidate will score an average of $5$ (Asian), $-1.1$ (African American) or $0.308$ additional points.
 	\end{itemize}
 
-	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4535, F= 17.7 p=2.2e-16, df=188$). We detect an outlier in our precondition verification, a student with an above-average grade in writing but an abysmal one in social studies. Since this individual exerts a significant influence in our model (as it is largely dependent on the writing scores for its estimations) we remove them from the sample. The other preconditions are met, the residuals are sufficiently normal (S-W $p = 0.0125$), homogeneous (Lev $p = 0.3394$, Bart $p = 0.4415$) and non-correlated (D-W, $p=0.678$).
+	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4581, BIC=1452$). The residuals are not sufficiently normal (S-W $p = 0.008$, Lillie $p=0.061$), homogeneous (Lev $p = 0.452$, Bart $p = 0.635$) and non-correlated (D-W, $p=0.848$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. Since the normality assumption can be waived because of our large sample size, we assume all preconditions are met.
 	
-	As mentioned above, this model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly non-statistically significant. We thus employ a stepwise procedure in order to eliminate variables deemed statistically insignificant while retaining, or increasing our models goodness of fit. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking}.
-	
-	The resulting model can be found in Table \ref{tab::lm_socst_peeking} and can be interpreted in a similar manner to the model above.
+	As mentioned above, this model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly not statistically significant. We thus employ a stepwise procedure in order to eliminate variables deemed statistically insignificant while retaining, or increasing our models goodness of fit. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking} and can be interpreted in a similar manner to the model above.
 	
 	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown "Competence" value. While other variables such as the candidate's past program, have a statistically significant influence in our model, we can see that the model's estimations are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of multi-co-linearity between the test variables, as seen in the previous auto-correlations tests.
-	
-	\input{lm_socst_peeking.tex}
-	
-	
-	
+	%
+	\input{lm_socst_peeking.tex}\unskip
+	%
 	\subsection{Identifying test score causation}
 	
 	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. If our alternative hypothesis was correct we would expect our models to no longer have a good performance, while having a much smaller statistical significance on the other lesson's model.
 	
-	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and his scores in the social studies test. Our initial model including all the variables scores a $R^2_{adj} = 0.3999$ score. We next verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.8403$), homogeneous (Lev $p = 0.1641$, Bart $p = 0.153$) and non-correlated (D-W, $p=0.534$) and there are no significant outliers. 
+	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and their score in the social studies test. Our initial model including all the variables performs adequately $R^2_{adj} = 0.3999, BIC=1404$. By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022, BIC=1395$, found in Table \ref{tab::lm_math_nopeeking}.
 	
-	This model again displays high confidence in the following variables: Race ($p_{raceasian} = 0.002$, $p_{racewhite} = 0.012$), Program ($p_{progacademic} = 0.0005$), Social Study Test Scores ($p_{socst} = 4.25e-09$) and the Constant ($p_{socst} = 2e-16$). By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022$, found in Table \ref{tab::lm_math_nopeeking}.
-	
+	We verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.863$, Lillie $p=0.885$), homogeneous (Lev $p = 0.431$, Bart $p = 0.42$) and non-correlated (D-W, $p=0.57$). There appears to be no multicollinearity, the residuals are marginally linear and there are no anomalies.
+	%
 	\input{lm_math_nopeeking.tex}
+	%
+	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393, BIC=1478$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p_{math} = 4.25e-09$) and the Constant ($p_{Intercept} = 5.27e-08$) is the candidate's Program ($p_{progvocation} = 0.0283$).
 	
-	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p_{math} = 4.25e-09$) and the Constant ($p_{Intercept} = 5.27e-08$) is the candidate's Program ($p_{progvocation} = 0.0283$).
+	Because of the many possible variables that are candidates for removal we can again employ a stepwise model selection algorithm. The best model by BIC (Table \ref{tab::lm_socst_nopeeking}) keeps only the math and program variables (as expected) but overall explains less of the data ($R^2_{adj} = 0.3383, BIC=1457$).
 	
-	We again verify the preconditions necessary for the linear regression model. The residuals appear to be normal (S-W $p = 0.7449$), homogeneous (Lev $p = 0.2314$, Bart $p = 0.2355$), the variables are non-correlated (D-W, $p=0.952$) and there are no significant outliers.
-	
-	Because of the many possible variables that are candidates for removal we can again employ a stepwise model selection algorithm. The best model by AIC keeps only the math and program variables (as expected) but overall explains less of the data ($R^2_{adj} = 0.3383$). Since the reduction in $R^2_{adj}$ is minimal, and since our models are built for estimation, not prediction, we will be using this model as optimal (Table \ref{tab::lm_socst_nopeeking}). This decision can be interpreted as choosing a model which can explain our data almost as well as the previous model, whose data are essentially considered noise because of their very low confidence.
-	
-	These findings appear to contradict our alternative hypothesis. While our models' performance certainly degraded, they still achieve comparable results, with their performance loss being explained by the degree to which \textit{"Competence"} can be measured. In other words, this unknown variable can be approximated more accurately by considering both other tests, instead of just one. This is further proof that our initial hypothesis appears to be correct.
-	
-	
+	We again verify the preconditions necessary for the linear regression model. The residuals appear to not be normal (S-W $p = 0.03985$, Lillie $p=0.02452$), homogeneous (Lev $p = 0.1413$, Bart $p = 0.2216$) and the variables are non-correlated (D-W, $p=0.984$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. We consider the model sound  despite the non-normality of the residuals because of our large sample size.
+	%
 	\input{lm_socst_nopeeking.tex}
+	%
+	These findings appear to contradict our alternative hypothesis. While our models' performance certainly degraded, they still achieve comparable results, with their performance loss being explained by the degree to which \textit{"Competence"} can be measured. In other words, this unknown variable can be approximated more accurately by considering both other tests, instead of just one. This is further proof that our initial hypothesis appears to be correct.
 
-	
 	\section{Conclusions \& Discussion}
 	\label{sec::conclusions}
 	
