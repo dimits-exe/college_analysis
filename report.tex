@@ -54,6 +54,9 @@
 	
 	The study is structured as follows: In Section \ref{sec::exploratory} we make general observations about our data, identify key relationships and form our first hypotheses. We follow up these hypotheses in Section \ref{sec::var_cors} with robust analyses and in Section \ref{sec::models} by employing various regression models. Section \ref{sec::conclusions} features an overview and discussion about our findings. Finally, we include graphs, tables and supporting documents in the report's Addendum (Section \ref{sec::addendum}).
 	
+	For the sake of brevity we will refer to the following statistical tests with the following acronyms: Shapiro Wilk (S-W) and Lilliefors (Kolmogorov-Smirnov) (K-S) normality tests, Bartlett (Bart) and Levene's (Lev) tests of homogeneity of variances, Durbin Watson (D-W) autocorrelation test, Wilcoxon (Wil) and Kruskal-Wallis (K-W) rank sum tests.
+	
+	
 	
 	\section{Exploratory Analysis}
 	\label{sec::exploratory}
@@ -106,9 +109,9 @@
 		\label{fig::test_distribution}
 	\end{figure}
 		
-	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p\_value = 0.015$), which can be seen in the Addendum.
+	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p = 0.015$), which can be seen in the Addendum.
 	
-	Finally, we study the relationships between the three subjects. There is a very statistically significant ($p\_value = 0.0000$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as \textit{"Competence"} in this report.
+	Finally, we study the relationships between the three subjects. There is a very statistically significant ($p < 0.0001$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, interfering variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this potential, unknown variable as \textit{"Competence"} in this report.
 	
 	Since the three subjects are strongly correlated we can explore correlations between the rest of the factors and any of the tests, assuming that a correlation with one strongly indicates with the other two as well. 
 	
@@ -135,15 +138,15 @@
 	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test score.
 	
 	% parencite displays as cite for some reason
-	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores (\textcite{means}), and conclude they are not normal (Shapiro-Wilk normality test, $p\_value = 0.0024$). The variances are not homogeneous (Levene's test $p\_value = 0.0022 < 0.05$, Bartlett's $p\_value = 0.0019 < 0.05$), although this should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the precondition's violation is not significant (\textcite{variances}). We will use a non-parametric test since the distribution of the differences do not have a normal kurtosis (Jarque-Bera Normality Test (\textcite{jarque}), $p\_value=0.026$), and thus their mean is not suitable.
+	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores (\textcite{means}), and conclude they are not normal (S-W, $p = 0.0024$). The variances are not homogeneous (Lev $p = 0.0022 < 0.05$, Bart $p = 0.0019 < 0.05$), although this should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the precondition's violation is not significant (\textcite{variances}). We will use a non-parametric test since the distribution of the differences do not have a normal kurtosis (Jarque-Bera Normality Test (\textcite{jarque}), $p=0.026$), and thus their mean is not suitable.
 	
-	We conclude there is a statistically significant difference between the writing scores of men and women (Wilcoxon Rank Sum Test, $p\_value = 0.0009$) with women having on average 5 more score than men (Wilcoxon Rank Sum Test with $H_a = less$, $p\_value = 0.0004$).
+	We conclude there is a statistically significant difference between the writing scores of men and women (Wil $p = 0.0009$) with women having on average 5 more score than men (Wil with $H_a = less$, $p = 0.0004$).
 	
 	
 	\subsection{Writing scores influenced by previous program}
-	We will now verify the preconditions for the parametric ANOVA test in order to test which programs are correlated with the writing tests' scores. The variances of the residuals are homogeneous (Levene's test $p\_value = 0.1873$, Bartlett's test $p\_value = 0.27$), but not normal (Shapiro-Wilk normality test, $p\_value = 0.002$). We will thus use a non-parametric test.
+	We will now verify the preconditions for the parametric ANOVA test in order to test which programs are correlated with the writing tests' scores. The variances of the residuals are homogeneous (Lev $p = 0.1873$, Bartlett's test $p = 0.27$), but not normal (S-W, $p = 0.002$). We will thus use a non-parametric test.
 	
-	We discover there is a statistically significant difference between the groups (Kruskall-Wallis rank sum test, $p\_value=4e-08$). We can consult the boxplots in Figure \ref{fig::write_prog}, where we observe significant differences between all three groups.
+	We discover there is a statistically significant difference between the groups (K-S, $p=4e-08$). We can consult the boxplots in Figure \ref{fig::write_prog}, where we observe significant differences between all three groups.
 	
 	
 	\section{Predictive / interpretative models}
@@ -154,9 +157,9 @@
 	
 	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
 	
-	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4753, F= 37.06 p\_value=2.2e-16, df=194$). We also verify all the preconditions for the regression model; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.2099$), homogeneous (Levene's Test $p\_value = 0.5901$, Bartlett test $p\_value = 0.4609$) our variables are non-correlated (Durbin-Watson test, $p\_value=0.232$) and there are no significant outliers (see Addendum).
+	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4753, F= 37.06 p=2.2e-16, df=194$). We also verify all the preconditions for the regression model; the residuals appear to be normal (S-W $p = 0.2099$), homogeneous (Lev $p = 0.5901$, Bart $p = 0.4609$) our variables are non-correlated (D-W, $p=0.232$) and there are no significant outliers (see Addendum).
 	
-	Our current model exhibits high confidence about the candidate's gender, previous program, writing scores, social study scores and the constant. However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p\_value=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.4882$. Since the model maintains its confidence about the other variables, we keep it as the optimal one.
+	Our current model exhibits high confidence about the candidate's gender, previous program, writing scores, social study scores and the constant. However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.4882$. Since the model maintains its confidence about the other variables, we keep it as the optimal one.
 	
 	Our data are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and distribution (see Section \ref{sec::exploratory}). Thus, there is no reason for any mathematical transformation to be applied to our data.
 	
@@ -164,15 +167,15 @@
 	
 	The resulting model can be found in Table \ref{tab::lm_math_peeking} and can be interpreted as such: 
 	\begin{itemize}
-		\item If a candidate is female, Hispanic, has a generic background, and completely failed her other tests (writing score = social studies score = 0), her score in the math test would be $20.334$ (equal to the Constant) (Very High confidence: $p\_value_{intercept} = 8.29e-09$). 
-		\item For every point scored in the writing test, the math score would improve by 0.4 points (Very High confidence: $p\_value_{write} = 3.57e-08$).
-		\item For every point scored in the social studies test, by 0.167 points (Very High confidence: $p\_value_{socst} = 0.0053$).
-		\item If the candidate is male, he will score an average of $-2.8$ less points (High confidence: $p\_value_{female} = 0.0056$).
-		\item Depending on his background the candidate will either on average score $3.788$ (academic) or $-0.375$ (vocational) additional points (High confidence: $p\_value_{progacademic} = 0.0025$).
-		\item Finally, depending on his race a candidate will score an average of $5$ (Asian), $-1.1$ (African American) or $0.308$ additional points (High confidence: $p\_value_{raceasian} = 0.05$).
+		\item If a candidate is female, Hispanic, has a generic background, and completely failed her other tests (writing score = social studies score = 0), her score in the math test would be $20.334$ (equal to the Constant) (Very High confidence: $p_{intercept} = 8.29e-09$). 
+		\item For every point scored in the writing test, the math score would improve by 0.4 points (Very High confidence: $p_{write} = 3.57e-08$).
+		\item For every point scored in the social studies test, by 0.167 points (Very High confidence: $p_{socst} = 0.0053$).
+		\item If the candidate is male, he will score an average of $-2.8$ less points (High confidence: $p_{female} = 0.0056$).
+		\item Depending on his background the candidate will either on average score $3.788$ (academic) or $-0.375$ (vocational) additional points (High confidence: $p_{progacademic} = 0.0025$).
+		\item Finally, depending on his race a candidate will score an average of $5$ (Asian), $-1.1$ (African American) or $0.308$ additional points (High confidence: $p_{raceasian} = 0.05$).
 	\end{itemize}
 
-	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4535, F= 17.7 p\_value=2.2e-16, df=188$). We detect an outlier in our precondition verification, a student with an above-average grade in writing but an abysmal one in social studies. Since this individual exerts a significant influence in our model (as it is largely dependent on the writing scores for its estimations) we remove them from the sample. The other preconditions are met, the residuals are sufficiently normal (Shapiro-Wilk normality test $p\_value = 0.0125$), homogeneous (Levene's Test $p\_value = 0.3394$, Bartlett test $p\_value = 0.4415$) and non-correlated (Durbin-Watson test, $p\_value=0.678$).
+	We now follow the same procedure for the social studies test. We fit a model involving all available variables, which explains our sample to a decent degree ($R^2_{adj} = 0.4535, F= 17.7 p=2.2e-16, df=188$). We detect an outlier in our precondition verification, a student with an above-average grade in writing but an abysmal one in social studies. Since this individual exerts a significant influence in our model (as it is largely dependent on the writing scores for its estimations) we remove them from the sample. The other preconditions are met, the residuals are sufficiently normal (S-W $p = 0.0125$), homogeneous (Lev $p = 0.3394$, Bart $p = 0.4415$) and non-correlated (D-W, $p=0.678$).
 	
 	As mentioned above, this model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly non-statistically significant. We thus employ a stepwise procedure in order to eliminate variables deemed statistically insignificant while retaining, or increasing our models goodness of fit. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking}.
 	
@@ -188,15 +191,15 @@
 	
 	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. If our alternative hypothesis was correct we would expect our models to no longer have a good performance, while having a much smaller statistical significance on the other lesson's model.
 	
-	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and his scores in the social studies test. Our initial model including all the variables scores a $R^2_{adj} = 0.3999$ score. We next verify all the necessary preconditions; the residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.8403$), homogeneous (Levene's Test $p\_value = 0.1641$, Bartlett $p\_value = 0.153$) and non-correlated (Durbin-Watson test, $p\_value=0.534$) and there are no significant outliers. 
+	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and his scores in the social studies test. Our initial model including all the variables scores a $R^2_{adj} = 0.3999$ score. We next verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.8403$), homogeneous (Lev $p = 0.1641$, Bart $p = 0.153$) and non-correlated (D-W, $p=0.534$) and there are no significant outliers. 
 	
-	This model again displays high confidence in the following variables: Race ($p\_value_{raceasian} = 0.002$, $p\_value_{racewhite} = 0.012$), Program ($p\_value_{progacademic} = 0.0005$), Social Study Test Scores ($p\_value_{socst} = 4.25e-09$) and the Constant ($p\_value_{socst} = 2e-16$). By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022$, found in Table \ref{tab::lm_math_nopeeking}.
+	This model again displays high confidence in the following variables: Race ($p_{raceasian} = 0.002$, $p_{racewhite} = 0.012$), Program ($p_{progacademic} = 0.0005$), Social Study Test Scores ($p_{socst} = 4.25e-09$) and the Constant ($p_{socst} = 2e-16$). By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022$, found in Table \ref{tab::lm_math_nopeeking}.
 	
 	\input{lm_math_nopeeking.tex}
 	
-	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p\_value_{math} = 4.25e-09$) and the Constant ($p\_value_{Intercept} = 5.27e-08$) is the candidate's Program ($p\_value_{progvocation} = 0.0283$).
+	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p_{math} = 4.25e-09$) and the Constant ($p_{Intercept} = 5.27e-08$) is the candidate's Program ($p_{progvocation} = 0.0283$).
 	
-	We again verify the preconditions necessary for the linear regression model. The residuals appear to be normal (Shapiro-Wilk normality test $p\_value = 0.7449$), homogeneous (Levene's Test $p\_value = 0.2314$, Bartlett test $p\_value = 0.2355$), the variables are non-correlated (Durbin-Watson test, $p\_value=0.952$) and there are no significant outliers.
+	We again verify the preconditions necessary for the linear regression model. The residuals appear to be normal (S-W $p = 0.7449$), homogeneous (Lev $p = 0.2314$, Bart $p = 0.2355$), the variables are non-correlated (D-W, $p=0.952$) and there are no significant outliers.
 	
 	Because of the many possible variables that are candidates for removal we can again employ a stepwise model selection algorithm. The best model by AIC keeps only the math and program variables (as expected) but overall explains less of the data ($R^2_{adj} = 0.3383$). Since the reduction in $R^2_{adj}$ is minimal, and since our models are built for estimation, not prediction, we will be using this model as optimal (Table \ref{tab::lm_socst_nopeeking}). This decision can be interpreted as choosing a model which can explain our data almost as well as the previous model, whose data are essentially considered noise because of their very low confidence.
 	
@@ -243,7 +246,7 @@
 			\textbf{Social Studies} & \makecell{$0.60$\\ $0.000$ ****} & \makecell{$0.54$\\ $0.000$**** \\} &\cellcolor{darkgray}\\
 			\hline
 		\end{tabular}
-		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their p\_values. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'.}
+		\caption{Pearson's correlation coefficient (Holm's correction) between the tests and their ps. Stars indicate significance scores: $>1$:'', $0.1$:'*', $0.01$: '**', $0.001$: '***', $<0.0001$: '****'.}
 		\label{tab::corr}
 	\end{table}
 
