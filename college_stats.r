@@ -253,7 +253,7 @@ library(stargazer)
 stargazer(optimal_math_model, type="latex", 
           title="Linear regression model predicting math test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_math_peeking", df=T,
-          out="lm_math_peeking.tex", report=('vc*p'))
+          out="lm_math_peeking.tex", report=('vc*p'), no.space=TRUE)
 
 
 # ===== SOCST MODEL  =====
@@ -329,7 +329,7 @@ plot(optimal_socst_model, 1)
 stargazer(optimal_socst_model, type="latex", 
           title="Linear regression model predicting social study test scores, taking into 
           account other test scores.", ci=T, label="tab::lm_socst_peeking", df=T,
-          out="lm_socst_peeking.tex", report=('vc*p'))
+          out="lm_socst_peeking.tex", report=('vc*p'), no.space=TRUE)
 
 
 # ===== erotima d =====
@@ -395,7 +395,7 @@ my_save_plot("lm_math_nopeek_linear_plot", plot,optimal_nopeek_math_model, 1, as
 stargazer(optimal_nopeek_math_model, type="latex", 
           title="Linear regression model predicting math test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_math_nopeeking", 
-          df=T, out="lm_math_nopeeking.tex", report=('vc*p'))
+          df=T, out="lm_math_nopeeking.tex", report=('vc*p'), no.space=TRUE)
 
 
 # ===== SOCST MODEL  =====
@@ -457,4 +457,4 @@ plot(optimal_socst_nopeek_model, 1)
 stargazer(optimal_socst_nopeek_model, type="latex", 
           title="Linear regression model predicting social study test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_socst_nopeeking",
-          df=T, out="lm_socst_nopeeking.tex", report=('vc*p'))
+          df=T, out="lm_socst_nopeeking.tex", report=('vc*p'), no.space=TRUE)
