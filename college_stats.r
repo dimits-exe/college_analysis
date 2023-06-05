@@ -27,6 +27,9 @@ df = data.frame(input)
 
 # Check the provided variables' types and refactor them when needed.
 
+# Fix typo from source dataset.
+names(df)[names(df) == 'genre'] <- 'gender'
+
 class(df$gender)
 df$gender <- as.factor(df$gender)
 levels(df$gender) <- c("male", "female")
@@ -42,9 +45,6 @@ levels(df$prog) <- c("general", "academic", "vocation")
 class(df$race)
 df$race <- as.factor(df$race)
 levels(df$race) <- c("hispanic", "asian", "african-amer", "white")
-
-# Fix typo from source dataset.
-names(df)[names(df) == 'genre'] <- 'gender'
 
 class(df$math)
 class(df$write)
@@ -71,7 +71,7 @@ density_plot <- function(x, title) {
 # Plot and save
 filepath = filepath_png("density_plots")
 png(filepath)
-par(mfrow=c(1,3))    # set the plotting area into a 1*3 array
+par(mfrow=c(3,1))    # set the plotting area into a 1*3 array
 density_plot(df$write, "Writing test scores")
 density_plot(df$math, "Math test scores")
 density_plot(df$write, "Social studies test scores")
@@ -127,21 +127,24 @@ shapiro.test(diff)
 library(nortest)
 lillie.test(diff)
 
-# Test whether the mean is well behaved by examining the normality of the 
-# residuals' kurtosis.
-library(moments)
-jarque.test(diff)
-
 # Test whether the differences are homogeneous.
 library(car)
 leveneTest(write ~ gender, df)
 bartlett.test(write ~ gender, df)
 
-# Preconditions for parametric t-test failed, thus execute a non-parametric 
-# test for the significance in differences in mean
-wilcox.test(men_write$write, women_write$write)
+# kurtosis.norm.test can't be used since its package is no longer available
+# but the mean and median are incredibly close to each other in our sample
+# so we can most likely use a parametric t-test
+
+# execute a parametric t-test for the significance in differences in mean
+t.test(men_write$write, women_write$write)
 # Test whether women specifically have a *higher* grade than men.
-wilcox.test(men_write$write, women_write$write, alternative = "less")
+t.test(men_write$write, women_write$write, alternative = "less")
+
+# display and save error barplots
+library(gplots)
+my_save_plot("writing_gender_error_plot", plotmeans, write~gender, data=df, xlab="Gender", ylab="Writing test score",
+          connect=F)
 
 # ANOVA test on whether previous program influences writing score.
 # We perform an ANOVA test since the mode of the prog variable is > 2.
@@ -163,11 +166,18 @@ lillie.test(anova$res)
 my_save_plot("write_prog_boxplot", boxplot, formula=formula, data=df)
 # not good mean
 
-# We thus perform a non-parametric ANOVA test.
+# Perform a non-parametric ANOVA test just in case
 kruskal.test(formula, data=df)
-# significant differences
-# show boxplots
+# significant differences here too
 
+# post-hoc statistics
+pairwise.t.test(df$write, df$prog)
+round(TukeyHSD(anova)$prog, 3)
+
+# display and save error barplots
+my_save_plot("write_prog_error_plot", plotmeans, write~prog, data=df, 
+              xlab="Previous program", ylab="Writing test score",
+              connect=F)
 
 # ===== erotima c =====
 
