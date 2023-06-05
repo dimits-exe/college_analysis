@@ -1,10 +1,10 @@
 
 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-% Date and time: Mon, Jun 05, 2023 - 8:23:06 PM
+% Date and time: Mon, Jun 05, 2023 - 8:23:09 PM
 \begin{table}[!htbp] \centering 
   \caption{Linear regression model predicting social study test scores, 
-          without relying on the writing tests.} 
-  \label{tab::lm_socst_nopeeking} 
+          using only binary variables for the other test scores.} 
+  \label{tab::lm_cut_socst} 
 \begin{tabular}{@{\extracolsep{5pt}}lc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
@@ -12,20 +12,22 @@
 \cline{2-2} 
 \\[-1.8ex] & socst \\ 
 \hline \\[-1.8ex] 
- progacademic & 2.833$^{*}$ \\ 
-  & p = 0.085 \\ 
-  progvocation & $-$3.829$^{**}$ \\ 
-  & p = 0.037 \\ 
-  math & 0.486$^{***}$ \\ 
-  & p = 0.000 \\ 
-  Constant & 26.285$^{***}$ \\ 
+ progacademic & 3.644$^{**}$ \\ 
+  & p = 0.024 \\ 
+  progvocation & $-$3.402$^{*}$ \\ 
+  & p = 0.063 \\ 
+  cut\_writePass & 6.695$^{***}$ \\ 
+  & p = 0.00002 \\ 
+  cut\_mathPass & 3.995$^{***}$ \\ 
+  & p = 0.007 \\ 
+  Constant & 44.867$^{***}$ \\ 
   & p = 0.000 \\ 
  \hline \\[-1.8ex] 
 Observations & 200 \\ 
-R$^{2}$ & 0.348 \\ 
-Adjusted R$^{2}$ & 0.338 \\ 
-Residual Std. Error & 8.733 (df = 196) \\ 
-F Statistic & 34.908$^{***}$ (df = 3; 196) \\ 
+R$^{2}$ & 0.357 \\ 
+Adjusted R$^{2}$ & 0.344 \\ 
+Residual Std. Error & 8.694 (df = 195) \\ 
+F Statistic & 27.108$^{***}$ (df = 4; 195) \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 

@@ -168,6 +168,7 @@
 	\label{sec::models}
 	
 	\subsection{Building the base models}
+	\label{ssec:base_models}
 	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will estimate a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
 	
 	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
@@ -212,11 +213,19 @@
 	
 	Because of the many possible variables that are candidates for removal we can again employ a stepwise model selection algorithm. The best model by BIC (Table \ref{tab::lm_socst_nopeeking}) keeps only the math and program variables (as expected) but overall explains less of the data ($R^2_{adj} = 0.3383, BIC=1457$).
 	
-	We again verify the preconditions necessary for the linear regression model. The residuals appear to not be normal (S-W $p = 0.03985$, K-S $p=0.02452$), homogeneous (Lev $p = 0.1413$, Bart $p = 0.2216$) and the variables are non-correlated (D-W, $p=0.984$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. We consider the model sound  despite the non-normality of the residuals because of our large sample size.
+	We again verify the preconditions necessary for the linear regression model. The residuals appear to not be normal (S-W $p = 0.03985$, K-S $p=0.02452$), homogeneous (Lev $p = 0.1413$, Bart $p = 0.2216$) and the variables are non-correlated (D-W, $p=0.984$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. We consider the model sound despite the non-normality of the residuals because of our large sample size.
 	%
 	\input{lm_socst_nopeeking.tex}
 	%
 	These findings appear to contradict our alternative hypothesis. While our models' performance certainly degraded, they still achieve comparable results, with their performance loss being explained by the degree to which \textit{"Competence"} can be measured. In other words, this unknown variable can be approximated more accurately by considering both other tests, instead of just one. This is further proof that our initial hypothesis appears to be correct.
+	
+	\subsection{Ruling out overfitting}
+	We briefly consider the possibility that our descriptive models overfit on the test scores, as they are the only numerical values in our dataset. To rule this possibility out, we re-run the tests from Section \ref{ssec:base_models} where all test variables are replaced with a binary variable denoting whether the candidate passed the respective test ($score>50$). Besides practical and symbolic significance, the threshold of $50$ was picked because the distribution of the test scores follows the normal distribution around a mean a little over $50$, so we expect most observations to be meaningfully differentiated across the two bins.
+	
+	If our models utilized the information efficiently, we would expect the new models' performance to not be substantially impacted. Indeed the respective binary math model performs with a respectable $R^2_{adj}$ of $0.4255$ ($BIC=1395$) and the social studies model with an $R^2_{adj}$ of $0.3442$ ($BIC=1460$). This further disproves the hypothesis that the models just overfitted on the other test scores.
+	
+	The math model seems to satisfy all preconditions (normal residuals - S-W $p=0.904$, K-S $p=0.72$, homogeneous - Lev $p=0.1805$, Bart $p=0.1028$ and not auto-correlated - D-W $p=0.794$). The social studies model is more unstable (residuals not normal - S-W $p=0.009$, K-S $p=0.0008$, not homogeneous - Lev $p=0.001$, Bart $p=3.395e-07$ and auto-correlated with a significance level of $10\%$ - D-W $p=0.61$), but curiously the factorization of the variables seems to have fixed the linearity issues (see Addendum). The variables remain non-correlated with no anomalies.
+ 
 
 	\section{Conclusions \& Discussion}
 	\label{sec::conclusions}

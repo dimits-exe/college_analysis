@@ -468,3 +468,148 @@ stargazer(optimal_socst_nopeek_model, type="latex",
           title="Linear regression model predicting social study test scores, 
           without relying on the writing tests.", ci=T, label="tab::lm_socst_nopeeking",
           df=T, out="lm_socst_nopeeking.tex", report=('vc*p'), no.space=TRUE)
+
+
+# ===== erotima e =====
+
+# ===== MATH MODEL  =====
+# a function that cuts a vector to bins of (0,50] and (50,100]
+cut_score <- function(x) {
+  return(cut(x, breaks=c(0,50,100), labels=c("Fail","Pass"), include.lowest = TRUE))
+}
+
+# create a new dataframe containing the binned test scores
+cutdf = data.frame(df)
+cutdf$cut_write = cut_score(df$write)
+cutdf$cut_socst = cut_score(df$socst)
+cutdf$cut_math = cut_score(df$math)
+cutdf
+
+# create the math model from before but which is only allowed to look at
+# the binary test scores
+cut_math_model = lm(math ~.-id-socst-write-cut_math, cutdf)
+summary(cut_math_model)
+
+# Use an automated stepwise model selection routine to determine best model (by AIC)
+nullModel = lm(math ~ 1, data = df) 
+opt_cut_math_model = step(cut_math_model, direction = 'both',
+                                  scope = list(upper = cut_math_model,
+                                               lower = nullModel), 
+                                  trace = 0,  k=2)
+# View optimal model stats
+summary(opt_cut_math_model)
+
+# Compare BIC values
+BIC(cut_math_model)
+BIC(opt_cut_math_model)
+
+# Repeat previously established routine to check for outliers
+filepath = filepath_png("lm_math_binary_residual_plot")
+png(filepath)
+plot(opt_cut_math_model$fit, rstandard(opt_cut_math_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+# no outliers
+dev.off()
+
+# Perform Bonferroni outlier test
+outlierTest(opt_cut_math_model)
+
+# false positive
+cutdf[22,]
+
+# check for normality
+shapiro.test(rstandard(opt_cut_math_model))
+lillie.test(rstandard(opt_cut_math_model))
+
+# Repeat previously established routine to check for homogeneity
+qfits <- quantcut(opt_cut_math_model$fit)
+leveneTest(rstandard(opt_cut_math_model), qfits)
+bartlett.test(rstandard(opt_cut_math_model), qfits)
+my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, 
+             rstandard(opt_cut_math_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+             col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+             names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
+
+# Check for autocorrelation
+durbinWatsonTest(opt_cut_math_model)
+durbinWatsonTest(opt_cut_math_model, method="normal")
+
+# Check for multi-colinearity
+vif(opt_cut_math_model)
+
+# Check for linearity
+plot(opt_cut_math_model, 1)
+
+# Output model summary to latex
+stargazer(opt_cut_math_model, type="latex", 
+          title="Linear regression model predicting social study test scores, 
+          using binary variables for the other test scores.", ci=T, label="tab::lm_cut_math",
+          df=T, out="lm_cut_math.tex", report=('vc*p'), no.space=TRUE)
+
+
+# ===== SOCST MODEL  =====
+
+# create the socst model from before but which is only allowed to look at
+# the binary test scores
+cut_socst_model = lm(socst ~.-id-write-cut_socst-math, cutdf)
+summary(cut_socst_model)
+
+# Use an automated stepwise model selection routine to determine best model (by AIC)
+nullModel = lm(math ~ 1, data = df) 
+opt_cut_socst_model = step(cut_socst_model, direction = 'both',
+                          scope = list(upper = cut_socst_model,
+                                       lower = nullModel), 
+                          trace = 0,  k=2)
+# View optimal model stats
+summary(opt_cut_socst_model)
+
+# Compare BIC values
+BIC(cut_socst_model)
+BIC(opt_cut_socst_model)
+
+# Repeat previously established routine to check for outliers
+filepath = filepath_png("lm_socst_binary_residual_plot")
+png(filepath)
+plot(opt_cut_socst_model$fit, rstandard(opt_cut_socst_model))
+abline(h=-1.96, col='red', lwd=2, lty=2)
+abline(h=1.96, col='red', lwd=2, lty=2)
+# no outliers
+dev.off()
+
+# Perform Bonferroni outlier test
+outlierTest(opt_cut_socst_model)
+# same outlier as above model
+
+# check for normality
+shapiro.test(rstandard(opt_cut_socst_model))
+lillie.test(rstandard(opt_cut_socst_model))
+
+# Repeat previously established routine to check for homogeneity
+qfits <- quantcut(opt_cut_socst_model$fit)
+leveneTest(rstandard(opt_cut_socst_model), qfits)
+bartlett.test(rstandard(opt_cut_socst_model), qfits)
+my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, 
+             rstandard(opt_cut_socst_model)~qfits, 
+             boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
+             col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
+             names=c("Q1","Q2","Q3","Q4"), report=('vc*p'))
+
+# Check for autocorrelation
+durbinWatsonTest(opt_cut_socst_model)
+durbinWatsonTest(opt_cut_socst_model, method="normal")
+
+
+# Check for multi-colinearity
+vif(opt_cut_socst_model)
+
+# Check for linearity
+plot(opt_cut_socst_model, 1)
+
+# Output model summary to latex
+stargazer(opt_cut_socst_model, type="latex", 
+          title="Linear regression model predicting social study test scores, 
+          using only binary variables for the other test scores.", ci=T, 
+          label="tab::lm_cut_socst",
+          df=T, out="lm_cut_math.tex", report=('vc*p'), no.space=TRUE)
