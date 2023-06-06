@@ -47,20 +47,18 @@
 	\newpage
 	
 	\section{Abstract}
-	US College Admissions have and continue to be a subject of great debate among scholars and analysts. Such educational institutions have an interest in selecting the most qualified applicants using limited data, while the applicants themselves often protest admission requirements, especially those deemed discriminatory in nature. In this study we investigate how test scores can be explained by various candidate traits and prior performance. We discover a relationship between the candidate's gender and previous program and their overall test scores. We also identify a positive correlation between test scores, which we attribute to a confounding variable which we name "Competence".
+	US College Admissions have and continue to be a subject of great debate among scholars and analysts. Such educational institutions have an interest in selecting the most qualified applicants using limited data, while the applicants themselves often protest admission requirements, especially those deemed discriminatory in nature. In this study we investigate how admission test scores can be explained by various candidate traits and prior performance. We discover a relationship between the candidate's gender and previous program and their overall test scores. We also identify a positive correlation between test scores, which we attribute to a confounding variable which we name "Competence".
 	
 	
 	\section{Introduction}
 	
-	The aim of this study is to investigate possible links and relationships between a candidate's characteristics and their performance in multiple standardized tests. We employ a random sample of 200 students who applied to continue their studies in their respective universities. Their application consisted of three standardized tests testing their skills and knowledge in mathematics, social studies and creative writing. An overview of the data contained can be found in Table \ref{tab::dataset}. 
+	The aim of this study is to investigate possible links and relationships between a candidate's characteristics and their performance in multiple standardized tests. We employ a random sample of 200 students who applied to continue their studies in their respective universities. Their application consisted of three standardized tests testing their skills and knowledge in mathematics, social studies and writing. An overview of the data contained can be found in Table \ref{tab::dataset}. 
 	
 	The study is structured as follows: In Section \ref{sec::exploratory} we make general observations about our data, identify key relationships and form our first hypotheses. We follow up these hypotheses in Section \ref{sec::var_cors} with robust analyses and in Section \ref{sec::models} by employing various regression models. Section \ref{sec::conclusions} features an overview and discussion about our findings. Finally, we include graphs, tables and supporting documents in the report's Addendum (Section \ref{sec::addendum}).
 	
-	The data and replication code can be found in our GitHub repository \footnote{\url{https://github.com/dimits-exe/college_analysis}}. We make the assumption that the dataset has been acquired through random, unbiased sampling. We also make the assumption that the records using different IDs represent different students (and as such are considered independent samples).
-	
 	For the sake of brevity we will refer to the following statistical tests with the following acronyms: Shapiro Wilk (S-W) and Lilliefors (Kolmogorov-Smirnov) (K-S) normality tests, Bartlett (Bart) and Levene's (Lev) tests of homogeneity of variances, Durbin Watson (D-W) autocorrelation test, Tukeys Honest Significance Test (Tukey), Welch Two Sample t-test (Welch) and the Wilcoxon (Wil) and Kruskal-Wallis (K-W) rank sum tests.
 	
-	All the test, images and graphs were executed and built using \code{R $4.11$} and the \code{haven, nortest, car, psych, sjPlot, gplot} and \code{stargazer} libraries.
+	The data and replication code can be found in our GitHub repository \footnote{\url{https://github.com/dimits-exe/college_analysis}}. We make the assumption that the dataset has been acquired through random, unbiased sampling. All the tests, images and graphs were executed built and exported using \code{R $4.11$} and the \code{haven, nortest, car, psych, sjPlot, gplot} and \code{stargazer} libraries.
 	
 	\section{Exploratory Analysis}
 	\label{sec::exploratory}
@@ -87,7 +85,7 @@
 		\label{tab::dataset}
 	\end{table}
 	
-	The numerical variables contained in the dataset are described in Table \ref{tab::summary_stats} and their distributions can be seen in Figure \ref{fig::test_distribution}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
+	The data utilized in the study can be found in Table \ref{tab::dataset}, and the numerical variables in particular are described in Table \ref{tab::summary_stats} and their distributions can be seen in Figure \ref{fig::test_distribution}. We observe that they are all almost symmetrical ($-0.5 \leq skew \leq 0.5$), and feature moderate negative (right) skewness with a mean/median hovering just above a score of 50. This indicates most students score around the baseline, most of which pass the exams with a mediocre grade.
 	
 	\begin{table}
 		\centering
@@ -113,7 +111,7 @@
 		\label{fig::test_distribution}
 	\end{figure}
 		
-	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p = 0.015$), which can be seen in the Addendum.
+	We next study relationships between the candidates' characteristics (not including test scores). We run $\chi^2$ tests on \textit{Gender, Race, Program} and \textit{School Type}. The only statistically significant relationship in our dataset is between \textit{School Type} and \textit{Program} ($p = 0.015$), which can be seen in the Addendum (Table \ref{tab::chisq}).
 	
 	Finally, we study the relationships between the three subjects. There is a very statistically significant ($p < 0.0001$), positive (Pearson's $r > 0.5$) relationship between all three subjects. This could be indicative of either one of the variables influencing the other, or an unknown, confounding variable which positively affects the three test scores. We hypothesize the latter, as the existence of such a variable indicating the student's general competence in tests makes intuitive sense. We will refer to this confounding variable as \textit{"Competence"} in this report. Since the three tests are strongly correlated we can extrapolate with some certainty that a relationship between one characteristic and one of the tests implies a similar relationship between that characteristic and the other tests as well.
 	
@@ -136,26 +134,27 @@
 	\section{Variable correlations}
 	\label{sec::var_cors}
 	
-	\subsection{Writing scores influenced by gender}
 	Our exploratory analysis indicated a possible discrepancy between the results of writing tests between men and women, as well as between different programs. We thus investigate whether gender and the candidate's current program play a role in writing test scores.
 	
+	\subsection{Writing scores influenced by gender}
+	
 	% parencite displays as cite for some reason
-	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores (\textcite{means}), and conclude they are not normal (S-W, $p = 0.0024$). The variances are not homogeneous (Lev $p = 0.0022 < 0.05$, Bart $p = 0.0019 < 0.05$). These should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the violation of the normality and homogeneity preconditions is not significant (\textcite{variances}). Since the mean is incredibly close to our median in our sample, and the writing score distribution we saw in Figure \ref{fig::test_distribution} seems well behaved, we can use a parametric t-test to compare the differences between the test scores of men and women. 
+	We begin by verifying the preconditions necessary for the standard t-test in order to compare the genders' scores. We compute the mean differences of the samples by subtracting the global mean by the women's scores (\textcite{means}), and conclude they are not normal (S-W, $p = 0.0024$). The variances are not homogeneous (Lev $p = 0.0022 < 0.05$, Bart $p = 0.0019 < 0.05$). These should not dissuade us from using a parametric t-test since the relatively large sample size ($N=200$) and balanced groups ($N_{women} = 109, N_{men} = 91$) means the violation of the normality and homogeneity preconditions is not significant (\textcite{variances}). Since the mean is  close to our median in our sample, and the writing score distribution we saw in Figure \ref{fig::test_distribution} seems well behaved around the mean, we can use a parametric t-test to compare the differences between the test scores of men and women. 
 	
 	We conclude there is a statistically significant difference between the writing scores of men and women (Welch $p = 0.0003$) with women having on average 5 more score than men (Welch with $H_a = less$, $p = 0.0002$). The differences with 95\% confidence intervals can be seen in Figure \ref{fig::write_gender_error}.
 	
 	\begin{figure}
 		\includegraphics[width=8cm]{writing_gender_error_plot.png}
 		\centering
-		\caption{Error bars displaying writing score by gender. The blue lines indicate the 95\% confidence interval, meaning the range of values we expect 95\% of the observations existing in, for each sample.}
+		\caption{Error bars displaying writing score by gender. The blue lines indicate the 95\% confidence interval, meaning we expect 95\% of the observations for each sample to exist in this range.}
 		\label{fig::write_gender_error}
 	\end{figure}
 	
 	
 	\subsection{Writing scores influenced by previous program}
-	We will now verify the preconditions for the parametric ANOVA test in order to test which past programs are correlated with the writing tests' scores. The variances of the residuals are homogeneous (Lev $p = 0.1873$, Bart $p = 0.27$), but not normal (S-W $p = 0.002$, K-S $p=0.024$). Since we have a large sample size, and since the mean seems to be suitable for comparing differences between the groups (see section above), we can use a parametric ANOVA test.
+	We will now verify the preconditions for the parametric ANOVA test in order to test which past programs are correlated with the writing test scores. The variances of the residuals are homogeneous (Lev $p = 0.1873$, Bart $p = 0.27$), but not normal (S-W $p = 0.002$, K-S $p=0.024$). Since we have a large sample size, and since the mean seems to be suitable for comparing differences between the groups (see section above), we can use a parametric ANOVA test.
 	
-	We discover there is a statistically significant difference between the groups (ANOVA, $p=4.3e-09$). We specifically discover significant differences between the academic and general programs (Paired t-test $p=0.032$, Tukey $p=0.005$), academic and vocational (Paired t-test $p=3.4e-09$, Tukey $p<0.0001$) and between general and vocational programs (Paired t-test $p=0.107$, Tukey $p=0.029$). The mean differences between the different past programs can be seen in Figure \ref{fig::write_prog_error}.
+	We discover there is a statistically significant difference between the groups (ANOVA, $p=4.3e-09$). We specifically discover significant differences between the academic and general programs (Paired t-test $p=0.032$, Tukey $p=0.005$), academic and vocational (Paired t-test $p=3.4e-09$, Tukey $p<0.0001$) and between general and vocational programs (Paired t-test $p=0.107$, Tukey $p=0.029$). The mean differences between the different programs can be seen in Figure \ref{fig::write_prog_error}.
 	
 	\begin{figure}
 		\includegraphics[width=8cm]{write_prog_error_plot.png}
@@ -171,13 +170,15 @@
 	\label{ssec:base_models}
 	Having confirmed our hypotheses regarding the relationships between the various variables and the writing test scores, we attempt to build a model which will estimate a candidate's math and social study scores, testing our hypothesis that the three scores are influenced by the same external factors. 
 	
-	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using a simple, Ordinary Least Squares (OLS) model.
+	Since there seem to be strong correlations between most independent variables and the writing scores, and since we already established a strong correlation between the scores themselves (attributed to the candidate's \textit{"Competence"}), we will be using an Ordinary Least Squares (OLS) model. An OLS model is a mathematical tool that helps us understand and predict relationships between different variables by drawing a straight line through data points to approximate the overall trend. An important advantage of this type of model is that it is simple and intuitive to explain complex relationships between many variables, which is our goal in this section.
 	
-	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4861, BIC=1377$). However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.488, BIC=1372, F= 24.729 p=<0.001$. We use BIC to compare our models as they are descriptive, not predictive.
+	In order to compare models we will be using two important metrics, Adjusted R-squared and BIC. Adjusted R-squared is a way to see how well a math equation fits the data, taking into account the number of variables used. BIC helps us pick the best math equation by considering how well it fits the data and how complicated it is. The bigger Adjusted R-squared and the lower BIC are, the better our model is at explaining our data.
 	
-	We briefly check the pre-conditions for linear regression. The residuals are not sufficiently normal (S-W $p = 0.0125$, K-S $p=0.0241$), although this does not discourage us, since linear models have been robust against normality assumption violations for large samples ($N\geq 100$) \cite{ols_linear}. The residuals are homogeneous given a $95\%$ confidence level (Lev $p = 0.081$, Bart $p = 0.05368$) and non-correlated (D-W, $p=0.26$). There are also no sings of multicollinearity. While some outliers exist, none of them are considered anomalies.
+	We initially build an OLS model estimating the writing scores which involves all the available variables. This model exhibits a good fit, being able to explain almost half of the variance in our data ($R^2_{adj} = 0.4861, BIC=1377$). However, it exhibits low confidence about the candidate's race and no confidence about the school type ($p=0.6502$). In order to build an optimal model, we consider dropping these two variables. Dropping the candidate's race along with the school type leads to a slight decrease of $R^2_{adj} = 0.4753$. Dropping only the school type on the other hand leads to an improved $R^2_{adj} = 0.488, BIC=1372, (F= 24.729 p<0.001)$. We use BIC to compare our models as their purpose is to be descriptive, not predictive.
 	
-	An issue with our model is that there doesn't seem to be a strong linear relationship (see Addendum). Our data however are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and distribution (see Section \ref{sec::exploratory}). Thus, our model performs worse when mathematical transformations such as logarithms are applied to our data.
+	We briefly check the pre-conditions for linear regression. The residuals are not sufficiently normal (S-W $p = 0.0125$, K-S $p=0.0241$), although this does not discourage us, since linear models have been proven robust against normality assumption violations for large samples ($N\geq 100$) \cite{ols_linear}. The residuals are homogeneous given a $95\%$ confidence level (Lev $p = 0.081$, Bart $p = 0.05368$) and non-correlated (D-W, $p=0.26$). There are also no sings of multicollinearity. While some outliers exist, none of them are considered anomalies.
+	
+	An issue with our model is that there doesn't seem to be a strong linear relationship between our variables (see Addendum Table \ref{fig::lm_math_linear}). Our data however are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and (roughly) distribution (see Figure \ref{fig::test_distribution}). Thus, our model performs worse when mathematical transformations such as logarithms are applied to our data.
 	%
 	\input{lm_math_peeking.tex}
 	%
@@ -186,7 +187,7 @@
 		\item If a candidate is female, Hispanic, has a generic background, and completely failed her other tests (writing score = social studies score = 0), her score in the math test would be $20.334$. 
 		\item Each point scored in the writing test means the math score will be \textit{higher} for an average of 0.4 points.
 		\item Each point scored in the social studies test means the math score will be on average 0.167 points \textit{higher}.
-		\item If the candidate is male, he will score an average of $2.8$ \textit{less} points.
+		\item If the candidate is male, he will score an average of $2.8$ \textit{less} points overall.
 		\item Depending on his background the candidate will either on average score $3.788$ \textit{higher} (academic) or $0.375$ (vocational) \textit{lower} than average.
 		\item Finally, depending on his race a candidate will score an average of $5$ \textit{higher} (Asian), $0.308$ \textit{higher} (White) or $1.1$ \textit{lower} (African American) than average.
 	\end{itemize}
@@ -195,7 +196,7 @@
 	
 	Our model features a score of ($R^2_{adj} = 0.488, BIC=1452$) which is an improvement over the full model ($R^2_{adj} = 0.4581, BIC=1377$). The reason for this is, as mentioned above, that the model is reliant on the math and especially on the writing scores, while the rest of the variables are mostly not statistically significant. A summary of the resulting model can be found in Table \ref{tab::lm_socst_peeking} and can be interpreted in a similar manner to the model above.
 	
-	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown \textit{"Competence"} variable. While other variables such as the candidate's past program, have a statistically significant influence in our model, we can see that the model's estimations are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of correlation between the test variables, as seen in the previous correlation tests.
+	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown \textit{"Competence"} variable. While other variables, such as the candidate's previous program, have a statistically significant influence in our model, we can see that the model's estimations are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of correlation between the test variables, as seen in the previous correlation tests.
 	%
 	\input{lm_socst_peeking.tex}\unskip
 	%
@@ -203,7 +204,7 @@
 	
 	The results above, although encouraging, do not rule out the alternative hypothesis we posed in the Introduction of this report, that the definite correlation between the test scores is caused by one of the test scores themselves influencing the others. We thus repeat the experiments of the previous subsection while omitting the writing scores. If our alternative hypothesis was correct we would expect our models to no longer have a good performance, while having a much smaller statistical significance on the other lesson's model.
 	
-	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and their score in the social studies test. Our initial model including all the variables performs adequately $R^2_{adj} = 0.3999, BIC=1404$. By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022, BIC=1395$, found in Table \ref{tab::lm_math_nopeeking}.
+	We begin by constructing an OLS regression model which tries to estimate the math score by considering the candidate's characteristics and their score in the social studies test. Our initial model including all the variables performs adequately ($R^2_{adj} = 0.3999, BIC=1404$). By employing a backwards procedure we end up with our final model with a total $R^2_{adj} = 0.4022, BIC=1395$, found in Table \ref{tab::lm_math_nopeeking}.
 	
 	We verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.863$, K-S $p=0.885$), homogeneous (Lev $p = 0.431$, Bart $p = 0.42$) and non-correlated (D-W, $p=0.57$). There appears to be no multicollinearity, the residuals are marginally not linear and there are no anomalies.
 	%
@@ -224,7 +225,9 @@
 	
 	If our models utilized the information efficiently, we would expect the new models' performance to not be substantially impacted. Indeed the respective binary math model performs with a respectable $R^2_{adj}$ of $0.4255$ ($BIC=1395$) and the social studies model with an $R^2_{adj}$ of $0.3442$ ($BIC=1460$). This further disproves the hypothesis that the models just overfitted on the other test scores.
 	
-	The math model seems to satisfy all preconditions (normal residuals - S-W $p=0.904$, K-S $p=0.72$, homogeneous - Lev $p=0.1805$, Bart $p=0.1028$ and not auto-correlated - D-W $p=0.794$). The social studies model is more unstable (residuals not normal - S-W $p=0.009$, K-S $p=0.0008$, not homogeneous - Lev $p=0.001$, Bart $p=3.395e-07$ and auto-correlated with a significance level of $10\%$ - D-W $p=0.61$), but curiously the factorization of the variables seems to have fixed the linearity issues (see Addendum). The variables remain non-correlated with no anomalies.
+	The math model seems to satisfy all preconditions (normal residuals - S-W $p=0.904$, K-S $p=0.72$, homogeneous - Lev $p=0.1805$, Bart $p=0.1028$ and not auto-correlated - D-W $p=0.794$). The social studies model is more unstable (residuals not normal - S-W $p=0.009$, K-S $p=0.0008$, not homogeneous - Lev $p=0.001$, Bart $p=3.395e-07$ and auto-correlated with a significance level of $10\%$ - D-W $p=0.61$). There is no point in checking for linearity in an all-factor linear model, and the variables remain non-correlated with no anomalies.
+	
+	The full results of our models can be found in the Addendum (Tables \ref{tab::lm_cut_socst}, \ref{tab::lm_cut_math}).
  
 
 	\section{Conclusions \& Discussion}
@@ -232,7 +235,7 @@
 	
 	In this report we studied extensively the relationships between different characteristics of US university applicants. We observed that characteristics such as race, gender, schooling and previous programs are generally uncorrelated, with the exception of a positive relationship between private schooling and academic background. We verified that female candidates score on average higher than males in writing tests, as well as that the candidate's previous program influences their writing test scores. 
 	
-	Additionally, we observed a definite positive correlation between candidate test scores. We hypothesized this was the product of a confounding variable we called \textit{"Competence"} which similarly influences all test scores, and posed an alternative hypothesis stating that one of the test scores was the cause of the correlation. We show evidence of this variable's existence by constructing linear regression models and disprove the alternative hypothesis by constructing such models without access to the common variable \textit{Writing Score}.
+	Additionally, we observed a definite positive correlation between candidate test scores. We hypothesized this was the product of a confounding variable we called \textit{"Competence"} which similarly influences all test scores, and posed an alternative hypothesis stating that one of the test scores was the cause of the correlation. We show evidence of this variable's existence by constructing linear regression models and disprove the alternative hypothesis by constructing such models without access to the common variable \textit{Writing Score}. We also rule out the possibility that the models were simply overfitting on the numerical test variables by discretizing them and observing similar model behavior.
 	
 	This study highlights that other test scores are consistently robust and important variables when attempting to assess future test scores, even if these test scores are on different disciplines (such as social studies and mathematics). Further research is warranted to check whether past test scores can be used to consistently predict candidate performance, as well as from how far in the past, and between which disciplines these observations would be useful.
 	
@@ -249,7 +252,7 @@
 	\subsection{Exploratory Analysis}
 	In this section we include tables and figures which were used in the exploratory analysis of the data in the Introduction. 
 	
-	\begin{table}
+	\begin{table}[h!]
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
@@ -268,7 +271,7 @@
 		\label{tab::corr}
 	\end{table}
 
-	\begin{table}
+	\begin{table}[h!]
 		\centering
 		\rowcolors{2}{gray!25}{white}
 		\begin{tabular}
@@ -288,24 +291,31 @@
 		\label{tab::chisq}
 	\end{table}
 	
-	\begin{figure}[h]
+	\begin{figure}[h!]
 		\includegraphics[width=8cm]{write_schtyp_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by school type.}
 		\label{fig::write_schtyp_boxplot}
 	\end{figure}
 	
-	\begin{figure}[h]
+	\begin{figure}[h!]
 		\includegraphics[width=8cm]{write_race_boxplot.png}
 		\centering
 		\caption{Boxplot displaying the writing score by candidate race.}
 		\label{fig::write_race_boxplot}
 	\end{figure}
+
+	\begin{figure}[h!]
+		\includegraphics[width=8cm]{qqnorm_plots.png}
+		\centering
+		\caption{QQ norm plots for each of the three test score variables. The math test scores seem to follow the normal distribution well near the mean, but feature a heavy left "tail". The other test scores likewise feature heavy tails. Compare with the graphical distributions in Figure \ref{fig::test_distribution}.}
+		\label{fig::test_qqnorm}
+	\end{figure}
 	
 	
 	\subsection{OLS model preconditions}
 	
-	In order to check for the existence of a linear relationship between the model's residuals, we plot them against their values. A model is considered to have a linear relationship, if the conditional mean (red) line deviates from the horizontal reference line ($y=0$). Figures \ref{fig::lm_math_linear}, \ref{fig::lm_math_nopeek_linear} show the two math models whose conditional means show varying deviations from the reference line.
+	In order to check for the existence of a linear relationship between the model's residuals, we plot them against their values. A model is considered to have a linear relationship, if the conditional mean (red) line deviates from the horizontal reference line ($y=0$). Figures \ref{fig::lm_math_linear}, \ref{fig::lm_math_nopeek_linear} show the two math models whose conditional means show varying deviations from the reference line. Contrast with Figures \ref{fig::lm_socst_linear}, \ref{fig::lm_socst_nopeek_linear} whose conditional mean line does not deviate from the horizontal reference line.
 	
 	\begin{figure}
 		\includegraphics[width=8cm]{lm_math_linear_plot.png}
@@ -320,8 +330,22 @@
 		\caption{Linear reference plot for the second (optimal) math model. The conditional mean (red) line has an identical shape to the one in Figure \ref{fig::lm_math_linear}.}
 		\label{fig::lm_math_nopeek_linear}
 	\end{figure}
+
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_socst_linear_plot.png}
+		\centering
+		\caption{Linear reference plot for the first social studies model. The conditional mean (red) line hardly deviates from the $y=0$ line, indicating strong linearity.}
+		\label{fig::lm_socst_linear}
+	\end{figure}
 	
-	In order to visually confirm the homogeneity of variances of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot}, \ref{fig::lm_socst_nopeeking_boxplot} show models including only the other lesson's scores.
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_socst_nopeek_linear_plot.png}
+		\centering
+		\caption{Linear reference plot for the second social studies model. The conditional mean (red) line has an identical shape to the one in Figure \ref{fig::lm_socst_linear}.}
+		\label{fig::lm_socst_nopeek_linear}
+	\end{figure}
+	
+	In order to visually confirm the homogeneity of variances of the model's residuals, we plot their boxplots for each of the 4 quantiles. We expect these boxplots to resemble those of the normal distribution, centered on $y=0$ and with 95\% of their values not going above/below the $y=1.95$ and $y=-1.95$ respectively. Figures \ref{fig::lm_math_boxplot}, \ref{fig::lm_socst_boxplot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_boxplot}, \ref{fig::lm_socst_nopeeking_boxplot} show models including only the other lesson's scores Figures \ref{fig::lm_cut_math_boxplot}, \ref{fig::lm_cut_socst_boxplot} show the binary models.
 	
 	\begin{figure}
 		\includegraphics[width=8cm]{lm_math_residual_boxplot.png}
@@ -351,8 +375,23 @@
 		\label{fig::lm_socst_nopeeking_boxplot}
 	\end{figure}
 
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_math_binary_residual_boxplot.png}
+		\centering
+		\caption{The normalized residuals of the math model plotted for each of the 4 quantiles.}
+		\label{fig::lm_cut_math_boxplot}
+	\end{figure}
 
-	We also check for outliers by plotting the normalized residuals against the model's estimations. The red lines denote the $y=1.95$ and $y=-1.95$ values respectively and we expect 95\% of the points to be within them. Any value outside of $[-3,3]$ indicates a strong outlier which must be investigated. Figures \ref{fig::lm_math_plot}, \ref{fig::lm_socst_plot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_plot}, \ref{fig::lm_sosct_nopeeking_plot} show models including only the other lesson's scores.
+
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_socst_binary_residual_boxplot.png}
+		\centering
+		\caption{The normalized residuals of the binary social studies model plotted for each of the 4 quantiles. Notice the anomalous distribution in the 4th quantile.}
+		\label{fig::lm_cut_socst_boxplot}
+	\end{figure}
+
+
+	We also check for outliers by plotting the normalized residuals against the model's estimations. The red lines denote the $y=1.95$ and $y=-1.95$ values respectively and we expect 95\% of the points to be within them. Any value outside of $[-3,3]$ indicates a strong outlier which must be investigated. Figures \ref{fig::lm_math_plot}, \ref{fig::lm_socst_plot} show models including the writing scores. Figures \ref{fig::lm_math_nopeeking_plot}, \ref{fig::lm_sosct_nopeeking_plot} show models including only the other lesson's scores. Figures \ref{fig::lm_cut_math_outlier}, \ref{fig::lm_cut_socst_outlier} show the binary models.
 	
 	 \begin{figure}
 	 	\includegraphics[width=8cm]{lm_math_residual_plot.png}
@@ -364,7 +403,7 @@
 	 \begin{figure}
 	 	\includegraphics[width=8cm]{lm_socst_residual_plot.png}
 	 	\centering
-	 	\caption{The normalized residuals of the social studies model plotted against the model's estimations. Notice the one outlier above the $y=3$ line, which represents the data point that was investigated and removed.}
+	 	\caption{The normalized residuals of the social studies model plotted against the model's estimations. Notice the one outlier above the $y=3$ line, which represents the data point that was investigated, but ultimately not removed.}
 	 	\label{fig::lm_socst_plot}
 	 \end{figure}
  
@@ -381,5 +420,25 @@
 	 	\caption{The normalized residuals of the social studies model (without the writing scores variable) plotted against the model's estimations. We don't consider the values above and below the $y=3$ and $y=-3$ brackets respectively for the same reasons as in Figure \ref{fig::lm_math_nopeeking_plot}.}
 	 	\label{fig::lm_sosct_nopeeking_plot}
 	 \end{figure}
+ 
+	 \begin{figure}
+	 	\includegraphics[width=8cm]{lm_math_binary_outlier_plot.png}
+	 	\centering
+	 	\caption{The normalized residuals of the binary math model plotted for each of the 4 quantiles.}
+	 	\label{fig::lm_cut_math_outlier}
+	 \end{figure}
+	
+	\begin{figure}
+		\includegraphics[width=8cm]{lm_socst_binary_outlier_plot.png}
+		\centering
+		\caption{The normalized residuals of the binary social studies model plotted for each of the 4 quantiles.}
+		\label{fig::lm_cut_socst_outlier}
+	\end{figure}
+ 
+ 	\subsection{Binary score model results}
+ 	
+ 	\input{lm_cut_math.tex}
+ 	
+ 	\input{lm_cut_socst.tex}
 	
 \end{document}

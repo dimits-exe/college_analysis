@@ -68,13 +68,25 @@ density_plot <- function(x, title) {
   polygon(d, col="lightblue", border="black")
 }
 
-# Plot and save
+# Plot and save density plots
 filepath = filepath_png("density_plots")
 png(filepath)
 par(mfrow=c(3,1))    # set the plotting area into a 1*3 array
 density_plot(df$write, "Writing test scores")
 density_plot(df$math, "Math test scores")
 density_plot(df$write, "Social studies test scores")
+dev.off()
+
+# Plot and save normal qq plots
+filepath = filepath_png("qqnorm_plots")
+png(filepath)
+par(mfrow=c(3,1))
+qqnorm(df$math, main="Math test score QQ norm plot")
+qqline(df$math)
+qqnorm(df$socst, main="Social studies test score QQ norm plot")
+qqline(df$socst)
+qqnorm(df$write, main="Writing test score QQ norm plot")
+qqline(df$write)
 dev.off()
 
 # Perform correlation test on categorical variables.
@@ -333,7 +345,7 @@ durbinWatsonTest(optimal_socst_model, method="normal")
 vif(optimal_socst_model)
 
 #check for linearity
-plot(optimal_socst_model, 1)
+my_save_plot("lm_socst_linear_plot", plot, optimal_socst_model, 1)
 
 # Output model summary to latex
 stargazer(optimal_socst_model, type="latex", 
@@ -461,7 +473,7 @@ durbinWatsonTest(optimal_socst_nopeek_model, method="normal")
 vif(optimal_socst_nopeek_model)
 
 # Check for linearity
-plot(optimal_socst_nopeek_model, 1)
+my_save_plot("lm_socst_nopeek_linear_plot", plot, optimal_socst_nopeek_model, 1)
 
 # Output model summary to latex
 stargazer(optimal_socst_nopeek_model, type="latex", 
@@ -504,7 +516,7 @@ BIC(cut_math_model)
 BIC(opt_cut_math_model)
 
 # Repeat previously established routine to check for outliers
-filepath = filepath_png("lm_math_binary_residual_plot")
+filepath = filepath_png("lm_math_binary_outlier_plot")
 png(filepath)
 plot(opt_cut_math_model$fit, rstandard(opt_cut_math_model))
 abline(h=-1.96, col='red', lwd=2, lty=2)
@@ -526,7 +538,7 @@ lillie.test(rstandard(opt_cut_math_model))
 qfits <- quantcut(opt_cut_math_model$fit)
 leveneTest(rstandard(opt_cut_math_model), qfits)
 bartlett.test(rstandard(opt_cut_math_model), qfits)
-my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, 
+my_save_plot("lm_math_binary_residual_boxplot", boxplot, 
              rstandard(opt_cut_math_model)~qfits, 
              boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
              col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
@@ -539,8 +551,7 @@ durbinWatsonTest(opt_cut_math_model, method="normal")
 # Check for multi-colinearity
 vif(opt_cut_math_model)
 
-# Check for linearity
-plot(opt_cut_math_model, 1)
+# No point in checking for linearity in all-factor ols model
 
 # Output model summary to latex
 stargazer(opt_cut_math_model, type="latex", 
@@ -570,7 +581,7 @@ BIC(cut_socst_model)
 BIC(opt_cut_socst_model)
 
 # Repeat previously established routine to check for outliers
-filepath = filepath_png("lm_socst_binary_residual_plot")
+filepath = filepath_png("lm_socst_binary_outlier_plot")
 png(filepath)
 plot(opt_cut_socst_model$fit, rstandard(opt_cut_socst_model))
 abline(h=-1.96, col='red', lwd=2, lty=2)
@@ -590,7 +601,7 @@ lillie.test(rstandard(opt_cut_socst_model))
 qfits <- quantcut(opt_cut_socst_model$fit)
 leveneTest(rstandard(opt_cut_socst_model), qfits)
 bartlett.test(rstandard(opt_cut_socst_model), qfits)
-my_save_plot("lm_socst_nopeeking_residual_boxplot", boxplot, 
+my_save_plot("lm_socst_binary_residual_boxplot", boxplot, 
              rstandard(opt_cut_socst_model)~qfits, 
              boxcol=0,boxfill=3, medlwd=2, medcol="white", cex=1.5, pch=16, 
              col='blue', xlab = "Quantiles", ylab="Standardized residuals", 
@@ -604,12 +615,11 @@ durbinWatsonTest(opt_cut_socst_model, method="normal")
 # Check for multi-colinearity
 vif(opt_cut_socst_model)
 
-# Check for linearity
-plot(opt_cut_socst_model, 1)
+# No point in checking for linearity in all-factor ols model
 
 # Output model summary to latex
 stargazer(opt_cut_socst_model, type="latex", 
           title="Linear regression model predicting social study test scores, 
           using only binary variables for the other test scores.", ci=T, 
           label="tab::lm_cut_socst",
-          df=T, out="lm_cut_math.tex", report=('vc*p'), no.space=TRUE)
+          df=T, out="lm_cut_socst.tex", report=('vc*p'), no.space=TRUE)

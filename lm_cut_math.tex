@@ -1,33 +1,41 @@
 
 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail: marek.hlavac at gmail.com
-% Date and time: Mon, Jun 05, 2023 - 8:23:09 PM
+% Date and time: Tue, Jun 06, 2023 - 8:02:50 PM
 \begin{table}[!htbp] \centering 
   \caption{Linear regression model predicting social study test scores, 
-          using only binary variables for the other test scores.} 
-  \label{tab::lm_cut_socst} 
+          using binary variables for the other test scores.} 
+  \label{tab::lm_cut_math} 
 \begin{tabular}{@{\extracolsep{5pt}}lc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
  & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
 \cline{2-2} 
-\\[-1.8ex] & socst \\ 
+\\[-1.8ex] & math \\ 
 \hline \\[-1.8ex] 
- progacademic & 3.644$^{**}$ \\ 
-  & p = 0.024 \\ 
-  progvocation & $-$3.402$^{*}$ \\ 
-  & p = 0.063 \\ 
-  cut\_writePass & 6.695$^{***}$ \\ 
-  & p = 0.00002 \\ 
-  cut\_mathPass & 3.995$^{***}$ \\ 
-  & p = 0.007 \\ 
-  Constant & 44.867$^{***}$ \\ 
+ genderfemale & $-$2.557$^{**}$ \\ 
+  & p = 0.017 \\ 
+  raceasian & 5.672$^{**}$ \\ 
+  & p = 0.035 \\ 
+  raceafrican-amer & $-$1.235 \\ 
+  & p = 0.569 \\ 
+  racewhite & 2.569 \\ 
+  & p = 0.119 \\ 
+  progacademic & 4.643$^{***}$ \\ 
+  & p = 0.0005 \\ 
+  progvocation & $-$0.764 \\ 
+  & p = 0.613 \\ 
+  cut\_writePass & 7.055$^{***}$ \\ 
+  & p = 0.00000 \\ 
+  cut\_socstPass & 3.009$^{**}$ \\ 
+  & p = 0.015 \\ 
+  Constant & 43.310$^{***}$ \\ 
   & p = 0.000 \\ 
  \hline \\[-1.8ex] 
 Observations & 200 \\ 
-R$^{2}$ & 0.357 \\ 
-Adjusted R$^{2}$ & 0.344 \\ 
-Residual Std. Error & 8.694 (df = 195) \\ 
-F Statistic & 27.108$^{***}$ (df = 4; 195) \\ 
+R$^{2}$ & 0.449 \\ 
+Adjusted R$^{2}$ & 0.425 \\ 
+Residual Std. Error & 7.101 (df = 191) \\ 
+F Statistic & 19.422$^{***}$ (df = 8; 191) \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
