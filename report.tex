@@ -180,7 +180,7 @@
 	
 	An issue with our model is that there doesn't seem to be a strong linear relationship between our variables (see Addendum Table \ref{fig::lm_math_linear}). Our data however are exclusively either categorical variables, or numeric variables following the same scale (0-100 score) and (roughly) distribution (see Figure \ref{fig::test_distribution}). Thus, our model performs worse when mathematical transformations such as logarithms are applied to our data.
 	%
-	\input{lm_math_peeking.tex}
+	\input{./generated/lm_math_peeking.tex}
 	%
 	The resulting model can be found in Table \ref{tab::lm_math_peeking} and can be interpreted as such, assuming all other variables remain constant: 
 	\begin{itemize}
@@ -198,7 +198,7 @@
 	
 	The results seem to verify our main hypothesis, that the test scores are predominately caused by the unknown \textit{"Competence"} variable. While other variables, such as the candidate's previous program, have a statistically significant influence in our model, we can see that the model's estimations are consistently based on the writing and other-lesson's test scores. We can additionally rule out this relationship being a result of correlation between the test variables, as seen in the previous correlation tests.
 	%
-	\input{lm_socst_peeking.tex}\unskip
+	\input{./generated/lm_socst_peeking.tex}\unskip
 	%
 	\subsection{Identifying test score causation}
 	
@@ -208,7 +208,7 @@
 	
 	We verify all the necessary preconditions; the residuals appear to be normal (S-W $p = 0.863$, K-S $p=0.885$), homogeneous (Lev $p = 0.431$, Bart $p = 0.42$) and non-correlated (D-W, $p=0.57$). There appears to be no multicollinearity, the residuals are marginally not linear and there are no anomalies.
 	%
-	\input{lm_math_nopeeking.tex}
+	\input{./generated/lm_math_nopeeking.tex}
 	%
 	We repeat the procedure for estimating the social study test scores without relying on the writing tests. Our base model, which considers all the available variables, displays a $R^2_{adj} = 0.3393, BIC=1478$, which is considerably worse than the respective math model. This may be because of the previously mentioned reliance on the writing scores, which are no longer available to the model. Additionally, similarly to the previous models, the model lacks confidence in almost all other variables; the only statistical significant variable other than the math scores ($p_{math} = 4.25e-09$) and the Constant ($p_{Intercept} = 5.27e-08$) is the candidate's Program ($p_{progvocation} = 0.0283$).
 	
@@ -216,7 +216,7 @@
 	
 	We again verify the preconditions necessary for the linear regression model. The residuals appear to not be normal (S-W $p = 0.03985$, K-S $p=0.02452$), homogeneous (Lev $p = 0.1413$, Bart $p = 0.2216$) and the variables are non-correlated (D-W, $p=0.984$). There appears to be no multicollinearity, the residuals are linear and there are no anomalies. We consider the model sound despite the non-normality of the residuals because of our large sample size.
 	%
-	\input{lm_socst_nopeeking.tex}
+	\input{./generated/lm_socst_nopeeking.tex}
 	%
 	These findings appear to contradict our alternative hypothesis. While our models' performance certainly degraded, they still achieve comparable results, with their performance loss being explained by the degree to which \textit{"Competence"} can be measured. In other words, this unknown variable can be approximated more accurately by considering both other tests, instead of just one. This is further proof that our initial hypothesis appears to be correct.
 	
@@ -437,8 +437,8 @@
  
  	\subsection{Binary score model results}
  	
- 	\input{lm_cut_math.tex}
+ 	\input{./generated/lm_cut_math.tex}
  	
- 	\input{lm_cut_socst.tex}
+ 	\input{./generated/lm_cut_socst.tex}
 	
 \end{document}
